@@ -1,9 +1,9 @@
 #!/usr/bin/env python
+import os, sys, codecs, re
 import markdown2 as markdown
-import codecs
 from bottle import route, run, template, static_file, get, view, request
-import os, sys
 
+LINK_PATTERNS = [(re.compile(r'((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+(:[0-9]+)?|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)'),r'\1')]
 MDSERVER_HOME = None
 
 def listdir(fullpath, relativepath):
@@ -47,7 +47,7 @@ def markdown_files(filename):
     tails = """
 </article>
 """
-    html = markdown.markdown(text, extras=["tables", "code-friendly", "fenced-code-blocks"])
+    html = markdown.markdown(text, extras=["tables", "code-friendly", "fenced-code-blocks", "link-patterns"], link_patterns = LINK_PATTERNS)
     return "\n".join([heads, html, tails])
 
 @route('/<filename:re:.*>')
