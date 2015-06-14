@@ -12,17 +12,38 @@ def listdir(fullpath, relativepath):
     for item in os.listdir(fullpath):
         ret.append("<li><a href='" + relativepath + "/" + item + "'>" + item + "</a></li>")
     ret.append("</ul>")
-    print ret
-    return ret
-    
+    return "\n".join(ret)
+
+def get_common_header(request_path):
+    parent_path = request_path
+    last_index = parent_path.rfind("/")
+    if last_index >= 0:
+        parent_path = parent_path[0:last_index]
+
+    if parent_path == "":
+        parent_path = "/"
+        
+    common_header = """
+<div>
+    <a href="/">Home</a>
+    <a href="%s">Up</a>
+</div>
+""" % parent_path
+
+    return common_header
+
 @get('/<filename:re:.*\.png>')
 def images(filename):
+    if filename.startswith("images/"):
+        filename = filename[len("images/"):]
+
+    print "filename: ", filename
     return static_file(filename, root='images')
 
 @get('/<filename:re:.*\.css>')
 def stylesheets(filename):
     return static_file(filename, root=MDSERVER_HOME + "/css")
-
+        
 @route('/<filename:re:.*\.markdown>')
 @route('/<filename:re:.*\.md>')
 def markdown_files(filename):
@@ -41,19 +62,25 @@ def markdown_files(filename):
         padding: 30px;
     }
 </style>
+%s
 <article class="markdown-body">
-"""
+""" % get_common_header(request.path)
 
     tails = """
 </article>
-"""
+""" 
+    
     html = markdown.markdown(text, extras=["tables", "code-friendly", "fenced-code-blocks", "link-patterns"], link_patterns = LINK_PATTERNS)
     return "\n".join([heads, html, tails])
 
 @route('/<filename:re:.*>')
 def directories(filename):
     fullpath = os.getcwd() + "/" + filename
-    return listdir(fullpath, filename)
+
+    html = listdir(fullpath, filename)
+    header = get_common_header(request.path)
+
+    return "\n".join([header, html])
     
     
 if __name__ == '__main__':
