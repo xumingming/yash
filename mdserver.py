@@ -37,7 +37,6 @@ def images(filename):
     if filename.startswith("images/"):
         filename = filename[len("images/"):]
 
-    print "filename: ", filename
     return static_file(filename, root='images')
 
 @get('/<filename:re:.*\.css>')
@@ -73,10 +72,22 @@ def markdown_files(filename):
     html = markdown.markdown(text, extras=["tables", "code-friendly", "fenced-code-blocks", "link-patterns"], link_patterns = LINK_PATTERNS)
     return "\n".join([heads, html, tails])
 
+def home():
+    if os.path.exists(os.getcwd() + "/index.md"):
+        return markdown_files("index.md")
+
+    if os.path.exists(os.getcwd() + "/index.markdown"):
+        return markdown_files("index.markdown")
+
+def has_index():
+    return os.path.exists(os.getcwd() + "/index.md") or os.path.exists(os.getcwd() + "/index.markdown")
+
 @route('/<filename:re:.*>')
 def directories(filename):
     fullpath = os.getcwd() + "/" + filename
-
+    if filename == "" and has_index():
+        return home()
+            
     html = listdir(fullpath, filename)
     header = get_common_header(request.path)
 
@@ -88,4 +99,4 @@ if __name__ == '__main__':
         print """Usage: mdserver.py <MDSERVER_HOME>"""
     else:
         MDSERVER_HOME =sys.argv[1]
-        run(host='localhost', port=8080, reloader=True)
+        run(host='localhost', port=8888, reloader=True)
