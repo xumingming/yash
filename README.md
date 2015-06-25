@@ -21,5 +21,4 @@ The above command should be invoked in the directory where your markdown file is
 
 ![snapshot](snapshot.png)
 
-
-
+Now it supports searching!

@@ -1,3 +1,4 @@
+
 <%
     parent_path = request.path
     last_index = parent_path.rfind("/")
@@ -9,7 +10,7 @@
         parent_path = "/"
 	end
 %>
-
+% if show_header:
 <div>
     <a href="/">Home</a>
     <a href="{{ parent_path }}">Up</a>
@@ -18,3 +19,4 @@
       <input type="submit" value="Search"/>
     </form>
 </div>
+% end
