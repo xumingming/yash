@@ -11,12 +11,12 @@ LINK_PATTERNS = [(re.compile(r'((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 
-@get('/<filename:re:.*\.png>')
+@get('/<filename:re:.*\.(png|jpg|gif|ico)>')
 def images(filename):
-    if filename.startswith("images/"):
-        filename = filename[len("images/"):]
+    # if filename.startswith("images/"):
+    #     filename = filename[len("images/"):]
 
-    return static_file(filename, root = os.path.join(os.getcwd(), 'images'))
+    return static_file(filename, root = os.getcwd())
 
 @get('/<filename:re:.*\.css>')
 def stylesheets(filename):
@@ -66,8 +66,15 @@ def directories(filename):
     fullpath = os.getcwd() + "/" + filename
     if filename == "" and has_index():
         return home()
-            
-    return dict(files = os.listdir(fullpath), relativepath = filename, request = request)
+
+    print "filename: ", filename
+    print "files: ", os.listdir(fullpath)
+    
+    relativepath = "/" + filename + "/"
+    if len(filename) == 0:
+        relativepath = "/"
+        
+    return dict(files = os.listdir(fullpath), relativepath = relativepath, request = request)
 
 
 if __name__ == '__main__':
