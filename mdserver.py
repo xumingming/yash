@@ -67,14 +67,13 @@ def directories(filename):
     if filename == "" and has_index():
         return home()
 
-    print "filename: ", filename
-    print "files: ", os.listdir(fullpath)
-    
     relativepath = "/" + filename + "/"
     if len(filename) == 0:
         relativepath = "/"
-        
-    return dict(files = os.listdir(fullpath), relativepath = relativepath, request = request)
+
+    files = os.listdir(fullpath)
+    files = [x for x in files if not x.startswith(".")]
+    return dict(files = files, relativepath = relativepath, request = request)
 
 
 if __name__ == '__main__':
