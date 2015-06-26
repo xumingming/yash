@@ -1,4 +1,3 @@
-
 <%
     parent_path = request.path
     last_index = parent_path.rfind("/")
@@ -10,7 +9,7 @@
         parent_path = "/"
 	end
 %>
-% if show_header:
+% if not request.GET.get('show_header') == 'false':
 <div>
     <a href="/">Home</a>
     <a href="{{ parent_path }}">Up</a>

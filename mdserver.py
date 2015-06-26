@@ -9,7 +9,6 @@ from search import Search
 
 LINK_PATTERNS = [(re.compile(r'((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+(:[0-9]+)?|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)'),r'\1')]
 MDSERVER_HOME = None
-SHOW_HEADER = True
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 
 @get('/<filename:re:.*\.png>')
@@ -32,7 +31,7 @@ def search_files():
 
     result = [x for x in result if x[1] is not None]
     result = map(lambda x : [x[0][len(os.getcwd()):len(x[0])], x[1]], result)
-    return dict(results = result, keyword = keyword, request = request, show_header = SHOW_HEADER)
+    return dict(results = result, keyword = keyword, request = request)
 
 
 @route('/<filename:re:.*\.markdown>')
@@ -49,7 +48,7 @@ def markdown_files(filename):
         link_patterns = LINK_PATTERNS
     )
 
-    return dict(html = html, request = request, show_header = SHOW_HEADER)
+    return dict(html = html, request = request)
 
 def home():
     if os.path.exists(os.getcwd() + "/index.md"):
@@ -68,7 +67,7 @@ def directories(filename):
     if filename == "" and has_index():
         return home()
             
-    return dict(files = os.listdir(fullpath), relativepath = filename, request = request, show_header = SHOW_HEADER)
+    return dict(files = os.listdir(fullpath), relativepath = filename, request = request)
 
 
 if __name__ == '__main__':
@@ -77,7 +76,5 @@ if __name__ == '__main__':
     else:
         MDSERVER_HOME = sys.argv[1]
         bottle.TEMPLATE_PATH = [os.path.join(MDSERVER_HOME, "views")]
-        if len(sys.argv) > 2:
-            SHOW_HEADER = False
             
         run(host='localhost', port=8000)
