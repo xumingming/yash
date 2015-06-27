@@ -73,7 +73,24 @@ def directories(filename):
 
     files = os.listdir(fullpath)
     files = [x for x in files if not x.startswith(".")]
-    return dict(files = files, relativepath = relativepath, request = request)
+    filemap = []
+    for f in files:
+        fullpath = os.getcwd() + relativepath + "/" + f
+        name = f
+        if os.path.isdir(fullpath):
+            namepath = fullpath + "/.name"
+            if os.path.exists(namepath):
+                input_file = codecs.open(namepath, mode="r", encoding="utf-8")
+                name       = input_file.readline()
+        elif f.endswith(".markdown") or f.endswith(".md") or f.endswith(".txt"):
+            input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
+            name       = input_file.readline()
+            name       = name.strip("#")
+
+        filemap.append([name, f])
+            
+
+    return dict(filemap = filemap, relativepath = relativepath, request = request)
 
 
 if __name__ == '__main__':

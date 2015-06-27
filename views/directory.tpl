@@ -1,6 +1,6 @@
 % include('header')
 <ul>
-	% for file in files:
-  	<li><a href="{{ relativepath }}{{ file }}">{{ file }}</a></li>
+	% for file in filemap:
+  	<li><a href="{{ relativepath }}{{ file[1] }}">{{ file[0] }}</a></li>
     % end
 </ul>
