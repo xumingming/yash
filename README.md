@@ -21,4 +21,8 @@ The above command should be invoked in the directory where your markdown file is
 
 ![snapshot](snapshot.png)
 
-Now it supports searching!
+## Advanced Features
+
+* Now it supports searching!
+* Now it supports a header bar(which provides navigation and search), and can be disabled by `show_header=false` parameter in request parameter.
+* Now it dont list hidden files
