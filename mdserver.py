@@ -13,9 +13,6 @@ TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 
 @get('/<filename:re:.*\.(png|jpg|gif|ico)>')
 def images(filename):
-    # if filename.startswith("images/"):
-    #     filename = filename[len("images/"):]
-
     return static_file(filename, root = os.getcwd())
 
 @get('/<filename:re:.*\.css>')
@@ -60,6 +57,14 @@ def home():
 def has_index():
     return os.path.exists(os.getcwd() + "/index.md") or os.path.exists(os.getcwd() + "/index.markdown")
 
+def extract_file_title(fullpath):
+    input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
+    name       = input_file.readline()
+    name       = name.strip("#")
+    input_file.close()
+
+    return name
+    
 @route('/<filename:re:.*>')
 @view('directory')
 def directories(filename):
@@ -80,12 +85,9 @@ def directories(filename):
         if os.path.isdir(fullpath):
             namepath = fullpath + "/.name"
             if os.path.exists(namepath):
-                input_file = codecs.open(namepath, mode="r", encoding="utf-8")
-                name       = input_file.readline()
+                name = extract_file_title(namepath)
         elif f.endswith(".markdown") or f.endswith(".md") or f.endswith(".txt"):
-            input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
-            name       = input_file.readline()
-            name       = name.strip("#")
+            name = extract_file_title(fullpath)
 
         filemap.append([name, f])
             
