@@ -7,7 +7,6 @@ import bottle
 from bottle import route, run, template, static_file, get, view, request, TEMPLATE_PATH
 from search import Search
 
-LINK_PATTERNS = [(re.compile(r'((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+(:[0-9]+)?|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)'),r'\1')]
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 
@@ -23,6 +22,9 @@ def stylesheets(filename):
 @view('search')
 def search_files():
     keyword = request.GET.get('w')
+    if len(keyword) > 0:
+        keyword = keyword.strip()
+        
     s = Search(os.getcwd(), keyword.decode("utf-8"), ("*.markdown", "*.md"))
     result = s.walk()
 
@@ -41,8 +43,7 @@ def markdown_files(filename):
 
     html = markdown.markdown(
         text,
-        extras        = ["tables", "code-friendly", "fenced-code-blocks", "link-patterns"],
-        link_patterns = LINK_PATTERNS
+        extras        = ["tables", "code-friendly", "fenced-code-blocks"]
     )
 
     return dict(html = html, request = request)
