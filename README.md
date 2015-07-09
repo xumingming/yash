@@ -8,6 +8,7 @@ This little script works very similar with `python -m SimpleHTTPServer`, but it 
 
     sudo pip install markdown2
     sudo pip intall bottle
+	sudo pip install beaker
 	git clone git@github.com:xumingming/mdserver.git
 	cd mdserver
 

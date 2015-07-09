@@ -4,11 +4,60 @@
 import os, sys, codecs, re
 import markdown2 as markdown
 import bottle
-from bottle import route, run, template, static_file, get, view, request, TEMPLATE_PATH
+from bottle import route, run, template, static_file, get, post, view, request, response, TEMPLATE_PATH, Bottle, hook, redirect
+import beaker.middleware
 from search import Search
+
+
 
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
+
+session_opts = {
+    'session.type': 'file',
+    'session.data_dir': '/tmp/mdserver-session/',
+    'session.auto': True,
+}
+
+app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
+
+def session_get(key):
+    session = bottle.request.environ.get('beaker.session')
+    return session.get(key)
+
+def session_set(key, value):
+    session = bottle.request.environ.get('beaker.session')
+
+    session[key] = value
+    session.save()
+
+@hook('before_request')
+def auth_hook():
+    if not request.path in ["/login", "/login1"]:
+        user = session_get("user")
+        if not user:
+            redirect("/login")
+
+@get("/login")
+@view("login")
+def login():
+    return dict()
+
+@post("/login1")
+def login1():
+    username = request.forms.get("username")
+    password = request.forms.get("password")
+    if username == "james" and password == "bond":
+        session_set("user", username)
+        redirect("/")
+    else:
+        redirect("/login")
+
+@get("/logout")
+@view("logout")
+def logout():
+    session_set("user", None)
+    redirect("/login")
 
 @get('/<filename:re:.*\.(png|jpg|gif|ico)>')
 def images(filename):
@@ -65,7 +114,7 @@ def extract_file_title(fullpath):
     input_file.close()
 
     return name
-    
+
 @route('/<filename:re:.*>')
 @view('directory')
 def directories(filename):
@@ -102,5 +151,6 @@ if __name__ == '__main__':
     else:
         MDSERVER_HOME = sys.argv[1]
         bottle.TEMPLATE_PATH = [os.path.join(MDSERVER_HOME, "views")]
-            
-        run(host='0.0.0.0', port=8000)
+
+        bottle.run(app = app, host='0.0.0.0', port=8000)
+        #app.run(host='0.0.0.0', port=8000)

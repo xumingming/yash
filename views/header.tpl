@@ -13,6 +13,7 @@
 <div>
     <a href="/">Home</a>
     <a href="{{ parent_path }}">Up</a>
+    <a href="/logout">Logout</a>	
     <form action="/search" method="GET" style="display:inline">
       <input type="text" name="w" size="15" />
       <input type="submit" value="Search"/>

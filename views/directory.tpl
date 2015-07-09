@@ -1,6 +1,8 @@
 <html>
   <head>
 	<link rel="stylesheet" href="list.css" />
+	<LINK REL="stylesheet" TYPE="text/css" 
+	 MEDIA="print, handheld" HREF="mobile.css">
   </head>
   <body>
 	% include('header')
