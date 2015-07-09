@@ -103,4 +103,4 @@ if __name__ == '__main__':
         MDSERVER_HOME = sys.argv[1]
         bottle.TEMPLATE_PATH = [os.path.join(MDSERVER_HOME, "views")]
             
-        run(host='localhost', port=8000)
+        run(host='0.0.0.0', port=8000)
