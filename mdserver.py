@@ -53,7 +53,6 @@ def auth_hook():
         
         role = "home"
         valid_paths = roles_config[role]
-        print "valid_paths: ", valid_paths
         for p in valid_paths:
             if request.path.startswith(p):
                 return
