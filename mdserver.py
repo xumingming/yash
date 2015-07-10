@@ -21,10 +21,7 @@ session_opts = {
 
 app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 
-roles_config = {
-    "super": [""],
-    "home": ["/home", "/public"]
-}
+roles_config = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))["roles"]
 
 def session_get(key):
     session = bottle.request.environ.get('beaker.session')
@@ -36,25 +33,33 @@ def session_set(key, value):
     session[key] = value
     session.save()
 
+def session_get_role():
+    return session_get("user").role
+
 def post_get(name, default=''):
     return bottle.request.POST.get(name, default).strip()    
 
 @hook('before_request')
 def auth_hook():
     # everyone can access "/public"
-    if request.path.startswith("/public"):
+    if request.path.startswith("/public") or request.path == "/":
         return
 
     # role based authentication
-    if (not request.path in ["/login", "/not-authorized"]) and not request.path.endswith(".css"):
+    if (not request.path in ["/login", "/not-authorized", "/logout"]) and not request.path.endswith(".css"):
         user = session_get("user")
         if not user:
             redirect("/login")
+
+
+        role = session_get_role()
+        # super user can access anything
+        if role == "super":
+            return
         
-        role = "home"
         valid_paths = roles_config[role]
         for p in valid_paths:
-            if request.path.startswith(p):
+            if request.path.startswith("/" + p):
                 return
 
         redirect("/not-authorized")
@@ -68,18 +73,33 @@ def not_authorized():
 def login():
     return dict()
 
+def get_config():
+    return simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))
+
+def get_users_config():
+    return get_config()["users"]
+
+def get_roles_config():
+    return get_config()["roles"]
+
 def is_valid_login(username, password):
-    MDSERVER_CONFIG = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))    
-    users = MDSERVER_CONFIG['users']
+    users = get_users_config()
     return username in users and users[username]['password'] == password
-    
+
+class User:
+    def __init__(self, username, role):
+        self.username = username
+        self.role = role
+        
 @post("/login")
 def login_post():
     username = request.forms.get("username")
     password = request.forms.get("password")
 
     if is_valid_login(username, password):
-        session_set("user", username)
+        role = get_users_config()[username]["role"]
+        user = User(username, role)
+        session_set("user", user)
         redirect("/")
     else:
         redirect("/login")
@@ -159,6 +179,11 @@ def directories(filename):
 
     files = os.listdir(fullpath)
     files = [x for x in files if not x.startswith(".")]
+
+    role = session_get_role()
+    if relativepath == "/" and not role == "super":
+        files = [x for x in files if x in roles_config[role]]
+        
     filemap = []
     for f in files:
         fullpath = os.getcwd() + relativepath + "/" + f
