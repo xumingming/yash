@@ -21,6 +21,11 @@ session_opts = {
 
 app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 
+roles_config = {
+    "super": [""],
+    "home": ["/home", "/public"]
+}
+
 def session_get(key):
     session = bottle.request.environ.get('beaker.session')
     return session.get(key)
@@ -36,10 +41,28 @@ def post_get(name, default=''):
 
 @hook('before_request')
 def auth_hook():
-    if (not request.path in ["/login"]) and not request.path.endswith(".css"):
+    # everyone can access "/public"
+    if request.path.startswith("/public"):
+        return
+
+    # role based authentication
+    if (not request.path in ["/login", "/not-authorized"]) and not request.path.endswith(".css"):
         user = session_get("user")
         if not user:
             redirect("/login")
+        
+        role = "home"
+        valid_paths = roles_config[role]
+        print "valid_paths: ", valid_paths
+        for p in valid_paths:
+            if request.path.startswith(p):
+                return
+
+        redirect("/not-authorized")
+        
+@get("/not-authorized")
+def not_authorized():
+    return "Invalid!"
 
 @get("/login")
 @view("login")
