@@ -37,7 +37,7 @@ def post_get(name, default=''):
 
 @hook('before_request')
 def auth_hook():
-    if (not request.path in ["/login"]) and not request.path.startswith("/css/"):
+    if (not request.path in ["/login"]) and not request.path.endswith(".css"):
         user = session_get("user")
         if not user:
             redirect("/login")
