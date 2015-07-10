@@ -7,7 +7,7 @@ This little script works very similar with `python -m SimpleHTTPServer`, but it 
 ## Install
 
     sudo pip install markdown2
-    sudo pip intall bottle
+    sudo pip install bottle
 	sudo pip install beaker
 	sudo pip install simpleyaml
 	git clone git@github.com:xumingming/mdserver.git
