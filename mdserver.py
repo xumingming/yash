@@ -12,7 +12,6 @@ import simpleyaml
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 MDSERVER_DATA_HOME = os.path.expanduser("~/.mdserver")
-MDSERVER_CONFIG = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))
 
 session_opts = {
     'session.type': 'file',
@@ -48,8 +47,8 @@ def login():
     return dict()
 
 def is_valid_login(username, password):
+    MDSERVER_CONFIG = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))    
     users = MDSERVER_CONFIG['users']
-    print users
     return username in users and users[username]['password'] == password
     
 @post("/login")
