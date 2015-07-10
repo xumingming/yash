@@ -39,6 +39,9 @@ def session_get_role():
 def post_get(name, default=''):
     return bottle.request.POST.get(name, default).strip()    
 
+def is_logined():
+    return not session_get("user") is None
+    
 @hook('before_request')
 def auth_hook():
     # everyone can access "/public"
@@ -47,10 +50,8 @@ def auth_hook():
 
     # role based authentication
     if (not request.path in ["/login", "/not-authorized", "/logout"]) and not request.path.endswith(".css"):
-        user = session_get("user")
-        if not user:
+        if not is_logined():
             redirect("/login")
-
 
         role = session_get_role()
         # super user can access anything
@@ -59,14 +60,14 @@ def auth_hook():
         
         valid_paths = roles_config[role]
         for p in valid_paths:
-            if request.path.startswith("/" + p):
+            if request.path.startswith("/" + p + "/") or request.path == "/" + p:
                 return
 
         redirect("/not-authorized")
         
 @get("/not-authorized")
 def not_authorized():
-    return "Invalid!"
+    return "Access Denied!"
 
 @get("/login")
 @view("login")
