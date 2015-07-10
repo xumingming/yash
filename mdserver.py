@@ -49,6 +49,7 @@ def login():
 
 def is_valid_login(username, password):
     users = MDSERVER_CONFIG['users']
+    print users
     return username in users and users[username]['password'] == password
     
 @post("/login")
