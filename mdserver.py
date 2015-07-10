@@ -7,15 +7,16 @@ import bottle
 from bottle import route, run, template, static_file, get, post, view, request, response, TEMPLATE_PATH, Bottle, hook, redirect
 import beaker.middleware
 from search import Search
-
-
+import simpleyaml
 
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
+MDSERVER_DATA_HOME = os.path.expanduser("~/.mdserver")
+MDSERVER_CONFIG = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))
 
 session_opts = {
     'session.type': 'file',
-    'session.data_dir': '/tmp/mdserver-session/',
+    'session.data_dir': MDSERVER_DATA_HOME + '/session/',
     'session.auto': True,
 }
 
@@ -31,9 +32,12 @@ def session_set(key, value):
     session[key] = value
     session.save()
 
+def post_get(name, default=''):
+    return bottle.request.POST.get(name, default).strip()    
+
 @hook('before_request')
 def auth_hook():
-    if not request.path in ["/login", "/login1"]:
+    if not request.path in ["/login"]:
         user = session_get("user")
         if not user:
             redirect("/login")
@@ -43,11 +47,16 @@ def auth_hook():
 def login():
     return dict()
 
-@post("/login1")
-def login1():
+def is_valid_login(username, password):
+    users = MDSERVER_CONFIG['users']
+    return username in users and users[username]['password'] == password
+    
+@post("/login")
+def login_post():
     username = request.forms.get("username")
     password = request.forms.get("password")
-    if username == "james" and password == "bond":
+
+    if is_valid_login(username, password):
         session_set("user", username)
         redirect("/")
     else:
@@ -97,6 +106,7 @@ def markdown_files(filename):
 
     return dict(html = html, request = request)
 
+
 def home():
     if os.path.exists(os.getcwd() + "/index.md"):
         return markdown_files("index.md")
@@ -144,7 +154,6 @@ def directories(filename):
 
     return dict(filemap = filemap, relativepath = relativepath, request = request)
 
-
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print """Usage: mdserver.py <MDSERVER_HOME>"""
@@ -153,4 +162,3 @@ if __name__ == '__main__':
         bottle.TEMPLATE_PATH = [os.path.join(MDSERVER_HOME, "views")]
 
         bottle.run(app = app, host='0.0.0.0', port=8000)
-        #app.run(host='0.0.0.0', port=8000)

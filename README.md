@@ -9,6 +9,7 @@ This little script works very similar with `python -m SimpleHTTPServer`, but it 
     sudo pip install markdown2
     sudo pip intall bottle
 	sudo pip install beaker
+	sudo pip install simpleyaml
 	git clone git@github.com:xumingming/mdserver.git
 	cd mdserver
 
@@ -24,6 +25,11 @@ The above command should be invoked in the directory where your markdown file is
 
 ## Advanced Features
 
+### Support username/password
+
+### Other features
+
 * Now it supports searching!
 * Now it supports a header bar(which provides navigation and search), and can be disabled by `show_header=false` parameter in request parameter.
 * Now it dont list hidden files
+* Now we support login/logout
