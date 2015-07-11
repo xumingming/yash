@@ -21,7 +21,48 @@ session_opts = {
 
 app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 
-roles_config = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))["roles"]
+class User:
+    def __init__(self, username, role):
+        self.username = username
+        self.role = role
+
+class Role:
+    def __init__(self, name, dirs):
+        self.name = name
+        self.dirs = dirs
+
+class Config:
+    def __init__(self):
+        config = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))
+        self.roles = config["roles"]
+        self.roles["public"] = ["public"]
+        
+        self.users = config["users"]
+
+    def authenticate(self, username, password):
+        return username in self.users and self.users[username]['password'] == password
+
+    def get_role_by_username(self, username):
+        user = self.users[username]
+        if not user:
+            return "public"
+        else:
+            return user["role"]
+
+    def get_dirs_by_role(self, role):
+        return self.roles[role]
+
+    def has_right(self, role, folder):
+        return folder in self.roles[role]
+
+    def is_login_required(self, url):
+        return (not url in ["/login", "/not-authorized", "/logout"]) and not url.endswith(".css")
+    
+config = Config()
+
+class RoleConfig:
+    def __init__(self, roles):
+        self.roles = roles
 
 def session_get(key):
     session = bottle.request.environ.get('beaker.session')
@@ -34,14 +75,17 @@ def session_set(key, value):
     session.save()
 
 def session_get_role():
-    return session_get("user").role
+    user = session_get("user")
+    if not user:
+        return "public"
+    return user.role
 
 def post_get(name, default=''):
     return bottle.request.POST.get(name, default).strip()    
 
 def is_logined():
     return not session_get("user") is None
-    
+
 @hook('before_request')
 def auth_hook():
     # everyone can access "/public"
@@ -49,7 +93,7 @@ def auth_hook():
         return
 
     # role based authentication
-    if (not request.path in ["/login", "/not-authorized", "/logout"]) and not request.path.endswith(".css"):
+    if config.is_login_required(request.path):
         if not is_logined():
             redirect("/login")
 
@@ -58,7 +102,7 @@ def auth_hook():
         if role == "super":
             return
         
-        valid_paths = roles_config[role]
+        valid_paths = config.get_dirs_by_role(role)
         for p in valid_paths:
             if request.path.startswith("/" + p + "/") or request.path == "/" + p:
                 return
@@ -74,31 +118,13 @@ def not_authorized():
 def login():
     return dict()
 
-def get_config():
-    return simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))
-
-def get_users_config():
-    return get_config()["users"]
-
-def get_roles_config():
-    return get_config()["roles"]
-
-def is_valid_login(username, password):
-    users = get_users_config()
-    return username in users and users[username]['password'] == password
-
-class User:
-    def __init__(self, username, role):
-        self.username = username
-        self.role = role
-        
 @post("/login")
 def login_post():
     username = request.forms.get("username")
     password = request.forms.get("password")
 
-    if is_valid_login(username, password):
-        role = get_users_config()[username]["role"]
+    if config.authenticate(username, password):
+        role = config.get_role_by_username(username)
         user = User(username, role)
         session_set("user", user)
         redirect("/")
@@ -109,7 +135,7 @@ def login_post():
 @view("logout")
 def logout():
     session_set("user", None)
-    redirect("/login")
+    redirect("/")
 
 @get('/<filename:re:.*\.(png|jpg|gif|ico)>')
 def images(filename):
@@ -183,7 +209,7 @@ def directories(filename):
 
     role = session_get_role()
     if relativepath == "/" and not role == "super":
-        files = [x for x in files if x in roles_config[role]]
+        files = [x for x in files if config.has_right(role, x)]
         
     filemap = []
     for f in files:
