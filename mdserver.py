@@ -56,7 +56,8 @@ class Config:
         return folder in self.roles[role]
 
     def is_login_required(self, url):
-        return (not url in ["/login", "/not-authorized", "/logout"]) and not url.endswith(".css")
+        staticFilePattren = '\.(:?js|css)$'
+        return (not url in ["/login", "/not-authorized", "/logout"]) and not re.search(staticFilePattren, url)
     
 config = Config()
 
@@ -92,6 +93,7 @@ def auth_hook():
     if request.path.startswith("/public") or request.path == "/":
         return
 
+    staticFilePattren = '\.(:?js|css)$'
     # role based authentication
     if config.is_login_required(request.path):
         if not is_logined():
@@ -137,13 +139,25 @@ def logout():
     session_set("user", None)
     redirect("/")
 
+@get ("/")
+# direct to login if not logined
+def checkLogin():
+    if not is_logined():
+        redirect("/login")
+    else:
+        return directories("")
+
 @get('/<filename:re:.*\.(png|jpg|gif|ico)>')
 def images(filename):
     return static_file(filename, root = os.getcwd())
 
 @get('/<filename:re:.*\.css>')
 def stylesheets(filename):
-    return static_file(filename, root=MDSERVER_HOME + "/css")
+    return static_file(filename, root=MDSERVER_HOME + "/")
+
+@get('/<filename:re:.*\.js>')
+def scripts(filename):
+    return static_file(filename, root=MDSERVER_HOME + "/")
 
 @route('/search')
 @view('search')
