@@ -1,16 +1,18 @@
 <html>
   <head>
-	<link rel="stylesheet" href="list.css" />
-	<LINK REL="stylesheet" TYPE="text/css" 
-	 MEDIA="print, handheld" HREF="mobile.css">
+    % include('head')
   </head>
   <body>
-	% include('header')
+    <div class="container">
+    % include('header')
 
-	<ul>
-	  % for file in filemap:
-  	  <li><a href="{{ relativepath }}{{ file[1] }}">{{ file[0] }}</a></li>
+    <ul class="list-group">
+      % for file in filemap:
+      <li class="list-group-item">
+          <a href="{{ relativepath }}{{ file[1] }}">{{ file[0] }}</a>
+      </li>
       % end
-	</ul>
+    </ul>
+    </div>
   </body>
 </html>

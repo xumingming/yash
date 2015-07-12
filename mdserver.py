@@ -12,7 +12,6 @@ import simpleyaml
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 MDSERVER_DATA_HOME = os.path.expanduser("~/.mdserver")
-MDSERVER_CONFIG = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))
 
 session_opts = {
     'session.type': 'file',
@@ -21,6 +20,50 @@ session_opts = {
 }
 
 app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
+
+class User:
+    def __init__(self, username, role):
+        self.username = username
+        self.role = role
+
+class Role:
+    def __init__(self, name, dirs):
+        self.name = name
+        self.dirs = dirs
+
+class Config:
+    def __init__(self):
+        config = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))
+        self.roles = config["roles"]
+        self.roles["public"] = ["public"]
+        
+        self.users = config["users"]
+
+    def authenticate(self, username, password):
+        return username in self.users and self.users[username]['password'] == password
+
+    def get_role_by_username(self, username):
+        user = self.users[username]
+        if not user:
+            return "public"
+        else:
+            return user["role"]
+
+    def get_dirs_by_role(self, role):
+        return self.roles[role]
+
+    def has_right(self, role, folder):
+        return folder in self.roles[role]
+
+    def is_login_required(self, url):
+        staticFilePattren = '\.(:?js|css)$'
+        return (not url in ["/login", "/not-authorized", "/logout"]) and not re.search(staticFilePattren, url)
+    
+config = Config()
+
+class RoleConfig:
+    def __init__(self, roles):
+        self.roles = roles
 
 def session_get(key):
     session = bottle.request.environ.get('beaker.session')
@@ -32,32 +75,60 @@ def session_set(key, value):
     session[key] = value
     session.save()
 
+def session_get_role():
+    user = session_get("user")
+    if not user:
+        return "public"
+    return user.role
+
 def post_get(name, default=''):
     return bottle.request.POST.get(name, default).strip()    
 
+def is_logined():
+    return not session_get("user") is None
+
 @hook('before_request')
 def auth_hook():
-    if (not request.path in ["/login"]) and not request.path.endswith(".css"):
-        user = session_get("user")
-        if not user:
+    # everyone can access "/public"
+    if request.path.startswith("/public") or request.path == "/":
+        return
+
+    staticFilePattren = '\.(:?js|css)$'
+    # role based authentication
+    if config.is_login_required(request.path):
+        if not is_logined():
             redirect("/login")
+
+        role = session_get_role()
+        # super user can access anything
+        if role == "super":
+            return
+        
+        valid_paths = config.get_dirs_by_role(role)
+        for p in valid_paths:
+            if request.path.startswith("/" + p + "/") or request.path == "/" + p:
+                return
+
+        redirect("/not-authorized")
+        
+@get("/not-authorized")
+def not_authorized():
+    return "Access Denied!"
 
 @get("/login")
 @view("login")
 def login():
     return dict()
 
-def is_valid_login(username, password):
-    users = MDSERVER_CONFIG['users']
-    return username in users and users[username]['password'] == password
-    
 @post("/login")
 def login_post():
     username = request.forms.get("username")
     password = request.forms.get("password")
 
-    if is_valid_login(username, password):
-        session_set("user", username)
+    if config.authenticate(username, password):
+        role = config.get_role_by_username(username)
+        user = User(username, role)
+        session_set("user", user)
         redirect("/")
     else:
         redirect("/login")
@@ -68,13 +139,25 @@ def logout():
     session_set("user", None)
     redirect("/login")
 
+@get ("/")
+# direct to login if not logined
+def checkLogin():
+    if not is_logined():
+        redirect("/login")
+    else:
+        return directories("")
+
 @get('/<filename:re:.*\.(png|jpg|gif|ico)>')
 def images(filename):
     return static_file(filename, root = os.getcwd())
 
 @get('/<filename:re:.*\.css>')
 def stylesheets(filename):
-    return static_file(filename, root=MDSERVER_HOME + "/css")
+    return static_file(filename, root=MDSERVER_HOME + "/")
+
+@get('/<filename:re:.*\.js>')
+def scripts(filename):
+    return static_file(filename, root=MDSERVER_HOME + "/")
 
 @route('/search')
 @view('search')
@@ -137,6 +220,11 @@ def directories(filename):
 
     files = os.listdir(fullpath)
     files = [x for x in files if not x.startswith(".")]
+
+    role = session_get_role()
+    if relativepath == "/" and not role == "super":
+        files = [x for x in files if config.has_right(role, x)]
+        
     filemap = []
     for f in files:
         fullpath = os.getcwd() + relativepath + "/" + f
@@ -160,4 +248,4 @@ if __name__ == '__main__':
         MDSERVER_HOME = sys.argv[1]
         bottle.TEMPLATE_PATH = [os.path.join(MDSERVER_HOME, "views")]
 
-        bottle.run(app = app, host='0.0.0.0', port=8000, reloader = True)
+        bottle.run(app = app, host='0.0.0.0', port=8000)

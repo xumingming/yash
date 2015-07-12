@@ -1,7 +1,8 @@
 <html>
   <head>
-	<link rel="stylesheet" href="/markdown.css">
-	<link rel="stylesheet" href="/zenburn.css">
+    % include('head')
+	<link rel="stylesheet" href="css/markdown.css">
+	<link rel="stylesheet" href="css/zenburn.css">
 	<style>
       .markdown-body {
       min-width: 200px;
