@@ -33,7 +33,7 @@
           </ul>
           <form class="navbar-form navbar-left" role="search" action="/search" method="GET">
             <div class="form-group">
-              <input type="text" class="form-control" placeholder="Search" name="w">
+              <input type="text" class="form-control" autofocus placeholder="Search" name="w">
             </div>
             <button type="submit" class="btn btn-default">Submit</button>
           </form>

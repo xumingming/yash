@@ -13,7 +13,9 @@
 	</style>
   </head>
   % include('header')
-  <article class="markdown-body">
-	{{ !html }}
-  </article>
+  <div class="container">
+      <article class="markdown-body">
+        {{ !html }}
+      </article>
+  </div>
 </html>
