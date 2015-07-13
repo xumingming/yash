@@ -30,13 +30,13 @@
             <li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
             <li><a href="{{ parent_path }}">Up</a></li>
             <li><a href="/logout">Logout</a></li>
-			<li><a href="{{request.url}}.qr">QR Code</li>
+			<li><a href="{{request.url}}.qr">QR Code</a></li>
           </ul>
           <form class="navbar-form navbar-left" role="search" action="/search" method="GET">
             <div class="form-group">
               <input type="text" class="form-control" autofocus placeholder="Search" name="w">
             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
+            <button type="submit" class="btn btn-default">Search</button>
           </form>
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
