@@ -30,6 +30,7 @@
             <li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
             <li><a href="{{ parent_path }}">Up</a></li>
             <li><a href="/logout">Logout</a></li>
+			<li><a href="{{request.url}}.qr">QR Code</li>
           </ul>
           <form class="navbar-form navbar-left" role="search" action="/search" method="GET">
             <div class="form-group">

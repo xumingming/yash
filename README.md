@@ -10,6 +10,7 @@ This little script works very similar with `python -m SimpleHTTPServer`, but it 
     sudo pip install bottle
 	sudo pip install beaker
 	sudo pip install simpleyaml
+	sudo pip install qrcode
 	git clone git@github.com:xumingming/mdserver.git
 	cd mdserver
 

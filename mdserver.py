@@ -8,6 +8,8 @@ from bottle import route, run, template, static_file, get, post, view, request, 
 import beaker.middleware
 from search import Search
 import simpleyaml
+import qrcode
+import StringIO
 
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
@@ -207,6 +209,17 @@ def extract_file_title(fullpath):
 
     return name
 
+@get('/<filename:re:.*\.qr>')
+def get_qrcode(filename):
+    actual_path = request.url[0:-3]
+    qrcode_img = qrcode.make(actual_path)
+
+    response.content_type = 'image/png'
+    buf = StringIO.StringIO()
+    qrcode_img.save(buf, "PNG")
+    contents = buf.getvalue()
+    return contents
+    
 @route('/<filename:re:.*>')
 @view('directory')
 def directories(filename):
