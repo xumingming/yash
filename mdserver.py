@@ -219,7 +219,15 @@ def get_qrcode(filename):
     qrcode_img.save(buf, "PNG")
     contents = buf.getvalue()
     return contents
-    
+
+@route('/<filename:re:.*\.xml>')
+def xml_files(filename):
+    fullpath   = os.getcwd() + "/" + filename
+    input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
+    text       = input_file.read()
+    response.content_type = "text/xml"
+    return text
+
 @route('/<filename:re:.*>')
 @view('directory')
 def directories(filename):
