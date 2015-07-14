@@ -141,14 +141,6 @@ def logout():
     session_set("user", None)
     redirect("/")
 
-@get ("/")
-# direct to login if not logined
-def checkLogin():
-    if not is_logined():
-        redirect("/login")
-    else:
-        return directories("")
-
 @get('/<filename:re:static\/.*\.(css|js|png|jpg|gif|ico)>')
 def static_files(filename):
     return static_file(filename, root=MDSERVER_HOME + "/")
