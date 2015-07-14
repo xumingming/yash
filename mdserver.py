@@ -28,11 +28,6 @@ class User:
         self.username = username
         self.role = role
 
-class Role:
-    def __init__(self, name, dirs):
-        self.name = name
-        self.dirs = dirs
-
 class Config:
     def __init__(self):
         config = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))
@@ -62,10 +57,6 @@ class Config:
         return (not url in ["/login", "/not-authorized", "/logout"]) and not re.search(staticFilePattren, url)
     
 config = Config()
-
-class RoleConfig:
-    def __init__(self, roles):
-        self.roles = roles
 
 def session_get(key):
     session = bottle.request.environ.get('beaker.session')
@@ -223,9 +214,8 @@ def directories(filename):
     for f in files:
         fullpath = os.getcwd() + relativepath + "/" + f
         name = f
-        is_dir = False
+        is_dir = os.path.isdir(fullpath)
         if os.path.isdir(fullpath):
-            is_dir = True
             namepath = fullpath + "/.name"
             if os.path.exists(namepath):
                 name = extract_file_title(namepath)
@@ -233,7 +223,6 @@ def directories(filename):
             name = extract_file_title(fullpath)
 
         filemap.append([name, f, is_dir])
-            
 
     return dict(filemap = filemap, relativepath = relativepath, request = request)
 
