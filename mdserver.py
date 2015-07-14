@@ -58,7 +58,7 @@ class Config:
         return folder in self.roles[role]
 
     def is_login_required(self, url):
-        staticFilePattren = '\.(:?js|css)$'
+        staticFilePattren = '^/static/'        
         return (not url in ["/login", "/not-authorized", "/logout"]) and not re.search(staticFilePattren, url)
     
 config = Config()
@@ -95,7 +95,6 @@ def auth_hook():
     if request.path.startswith("/public") or request.path == "/":
         return
 
-    staticFilePattren = '\.(:?js|css)$'
     # role based authentication
     if config.is_login_required(request.path):
         if not is_logined():
