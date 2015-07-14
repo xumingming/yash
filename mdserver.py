@@ -149,17 +149,13 @@ def checkLogin():
     else:
         return directories("")
 
+@get('/<filename:re:static\/.*\.(css|js|png|jpg|gif|ico)>')
+def static_files(filename):
+    return static_file(filename, root=MDSERVER_HOME + "/")
+
 @get('/<filename:re:.*\.(png|jpg|gif|ico)>')
 def images(filename):
     return static_file(filename, root = os.getcwd())
-
-@get('/<filename:re:.*\.css>')
-def stylesheets(filename):
-    return static_file(filename, root=MDSERVER_HOME + "/")
-
-@get('/<filename:re:.*\.js>')
-def scripts(filename):
-    return static_file(filename, root=MDSERVER_HOME + "/")
 
 @route('/search')
 @view('search')
@@ -250,14 +246,16 @@ def directories(filename):
     for f in files:
         fullpath = os.getcwd() + relativepath + "/" + f
         name = f
+        is_dir = False
         if os.path.isdir(fullpath):
+            is_dir = True
             namepath = fullpath + "/.name"
             if os.path.exists(namepath):
                 name = extract_file_title(namepath)
         elif f.endswith(".markdown") or f.endswith(".md") or f.endswith(".txt"):
             name = extract_file_title(fullpath)
 
-        filemap.append([name, f])
+        filemap.append([name, f, is_dir])
             
 
     return dict(filemap = filemap, relativepath = relativepath, request = request)
