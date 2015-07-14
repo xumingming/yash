@@ -135,7 +135,6 @@ def login_post():
         redirect("/login")
 
 @get("/logout")
-@view("logout")
 def logout():
     session_set("user", None)
     redirect("/")
@@ -178,16 +177,6 @@ def markdown_files(filename):
 
     return dict(html = html, request = request)
 
-def home():
-    if os.path.exists(os.getcwd() + "/index.md"):
-        return markdown_files("index.md")
-
-    if os.path.exists(os.getcwd() + "/index.markdown"):
-        return markdown_files("index.markdown")
-
-def has_index():
-    return os.path.exists(os.getcwd() + "/index.md") or os.path.exists(os.getcwd() + "/index.markdown")
-
 def extract_file_title(fullpath):
     input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
     name       = input_file.readline()
@@ -219,9 +208,6 @@ def xml_files(filename):
 @view('directory')
 def directories(filename):
     fullpath = os.getcwd() + "/" + filename
-    if filename == "" and has_index():
-        return home()
-
     relativepath = "/" + filename + "/"
     if len(filename) == 0:
         relativepath = "/"
