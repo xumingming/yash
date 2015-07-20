@@ -10,6 +10,7 @@ from search import Search
 import simpleyaml
 import qrcode
 import StringIO
+import scheduler
 
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
@@ -152,6 +153,13 @@ def search_files():
     result = map(lambda x : [x[0][len(os.getcwd()):len(x[0])], x[1]], result)
     return dict(results = result, keyword = keyword, request = request)
 
+def markdown_files_1(text):
+    html = markdown.markdown(
+        text,
+        extras        = ["tables", "code-friendly", "fenced-code-blocks"]
+    )
+
+    return dict(html = html, request = request, is_logined = is_logined())
 
 @route('/<filename:re:.*\.markdown>')
 @route('/<filename:re:.*\.md>')
@@ -161,12 +169,7 @@ def markdown_files(filename):
     input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
     text       = input_file.read()
 
-    html = markdown.markdown(
-        text,
-        extras        = ["tables", "code-friendly", "fenced-code-blocks"]
-    )
-
-    return dict(html = html, request = request, is_logined = is_logined())
+    return markdown_files_1(text)
 
 def extract_file_title(fullpath):
     input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
@@ -186,6 +189,31 @@ def get_qrcode(filename):
     qrcode_img.save(buf, "PNG")
     contents = buf.getvalue()
     return contents
+
+@get('/<filename:re:.*\.scr>')
+@view('markdown')
+def get_scr(filename):
+    fullpath   = os.getcwd() + "/" + filename
+
+    project = scheduler.parse(fullpath)
+
+    texts = []
+    texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
+    texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
+    for task in project.tasks:
+        #texts.append("{} | {} | {} | {} | {} | {}".format(task.name.encode("utf-8"), '--', '--', '--', '--', '--'))        
+        texts.append("{} | {} | {} | {} | {} | {}".format(
+            task.name.encode("utf-8"),
+            task.man.encode("utf-8"),
+            task.man_day,
+            project.task_start_date(task), 
+            project.task_end_date(task),
+            str(task.status) + "%",
+            project.max_task_name_length())
+        )
+
+    return markdown_files_1("\n".join(texts))
+
 
 @route('/<filename:re:.*\.xml>')
 def xml_files(filename):
