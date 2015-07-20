@@ -166,7 +166,7 @@ def markdown_files(filename):
         extras        = ["tables", "code-friendly", "fenced-code-blocks"]
     )
 
-    return dict(html = html, request = request)
+    return dict(html = html, request = request, is_logined = is_logined())
 
 def extract_file_title(fullpath):
     input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
