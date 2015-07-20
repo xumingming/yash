@@ -224,7 +224,7 @@ def directories(filename):
 
         filemap.append([name, f, is_dir])
 
-    return dict(filemap = filemap, relativepath = relativepath, request = request)
+    return dict(filemap = filemap, relativepath = relativepath, request = request, is_logined = is_logined())
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
