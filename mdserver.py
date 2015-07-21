@@ -261,7 +261,7 @@ def directories(filename):
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'p:m:')
 
-    port = 8080
+    port = 8000
     MDSERVER_HOME = None
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
