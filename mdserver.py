@@ -16,6 +16,7 @@ import getopt
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 MDSERVER_DATA_HOME = os.path.expanduser("~/.mdserver")
+SUPPORTED_PLAIN_FILE_TYPES = ["markdown", "md", "txt", "plan"]
 
 session_opts = {
     'session.type': 'file',
@@ -181,7 +182,7 @@ def extract_file_title(fullpath):
     return name
 
 @get('/<filename:re:.*\.qr>')
-def get_qrcode(filename):
+def serve_qrcode(filename):
     actual_path = request.url[0:-3]
     qrcode_img = qrcode.make(actual_path)
 
@@ -191,9 +192,9 @@ def get_qrcode(filename):
     contents = buf.getvalue()
     return contents
 
-@get('/<filename:re:.*\.scr>')
+@get('/<filename:re:.*\.plan>')
 @view('markdown')
-def get_scr(filename):
+def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
 
     project = parser.parse(fullpath)
@@ -247,8 +248,11 @@ def directories(filename):
             namepath = fullpath + "/.name"
             if os.path.exists(namepath):
                 name = extract_file_title(namepath)
-        elif f.endswith(".markdown") or f.endswith(".md") or f.endswith(".txt"):
-            name = extract_file_title(fullpath)
+        else:
+            extension_idx = f.rfind(".")
+            extension = f[extension_idx + 1:]
+            if extension in SUPPORTED_PLAIN_FILE_TYPES:
+                name = extract_file_title(fullpath)
 
         filemap.append([name, f, is_dir])
 
