@@ -11,6 +11,7 @@ import simpleyaml
 import qrcode
 import StringIO
 import parser
+import getopt
 
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
@@ -254,10 +255,20 @@ def directories(filename):
     return dict(filemap = filemap, relativepath = relativepath, request = request, is_logined = is_logined())
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2:
-        print """Usage: mdserver.py <MDSERVER_HOME>"""
+    opts, args = getopt.getopt(sys.argv[1:], 'p:m:')
+
+    port = 8080
+    MDSERVER_HOME = None
+    for opt_name, opt_value in opts:
+        opt_value = opt_value.strip()
+        if opt_name == '-p':
+            port = int(opt_value)
+        elif opt_name == '-m':
+            MDSERVER_HOME = os.path.expanduser(opt_value)
+    
+    if not MDSERVER_HOME:
+        print """Usage: mdserver.py -m <MDSERVER_HOME> -p <port>"""
     else:
-        MDSERVER_HOME = sys.argv[1]
         bottle.TEMPLATE_PATH = [os.path.join(MDSERVER_HOME, "views")]
 
-        bottle.run(app = app, host='0.0.0.0', port=8080)
+        bottle.run(app = app, host='0.0.0.0', port=port)
