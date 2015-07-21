@@ -196,8 +196,9 @@ def serve_qrcode(filename):
 @view('markdown')
 def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
-
-    project = parser.parse(fullpath)
+    input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
+    text       = input_file.read()
+    project = parser.parse(text)
 
     texts = []
     texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
@@ -210,7 +211,7 @@ def serve_plan(filename):
             project.task_start_date(task), 
             project.task_end_date(task),
             str(task.status) + "%",
-            project.max_task_name_length())
+            100)
         )
 
     return markdown_files_1("\n".join(texts))
