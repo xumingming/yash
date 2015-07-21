@@ -10,7 +10,7 @@ from search import Search
 import simpleyaml
 import qrcode
 import StringIO
-import scheduler
+import parser
 
 MDSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
@@ -195,13 +195,12 @@ def get_qrcode(filename):
 def get_scr(filename):
     fullpath   = os.getcwd() + "/" + filename
 
-    project = scheduler.parse(fullpath)
+    project = parser.parse(fullpath)
 
     texts = []
     texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
     texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
     for task in project.tasks:
-        #texts.append("{} | {} | {} | {} | {} | {}".format(task.name.encode("utf-8"), '--', '--', '--', '--', '--'))        
         texts.append("{} | {} | {} | {} | {} | {}".format(
             task.name.encode("utf-8"),
             task.man.encode("utf-8"),
