@@ -13,24 +13,29 @@ This little script works very similar with `python -m SimpleHTTPServer`, but it 
 	sudo pip install qrcode
 	git clone git@github.com:xumingming/mdserver.git
 	cd mdserver
+	chmod a+x mdserver.py
 
 ## Usage
 
-    python2 mdserver.py <full-path-of-your-mdserver-directory>
+Put the following in your `.bashrc`:
 
-The reason that you need to specify `<full-path-of-your-mdserver-directory>` is: we need to find the `css` which will used to beautify your document.
+```bash
+alias mdserver='sudo /path/to/your/mdserver.py -p 80'
+```
 
-The above command should be invoked in the directory where your markdown file is, it will list all your files, then you can access your markdown files as webpages, enjoy!
+Now in any folder you want to serve your files, just run `mdserver`, then visit `http://localhost`, that's it!
 
+## Features
+
+* File searching
+* List files of a dir
+* A simple username/password authentication.
+* A simple role based content filtering
+* Every page has it's own QR code(for easy sharing of the page url)
+* Support the following file types:
+  * txt
+  * images(jpg, png, gif)
+  * markdown
+  * plan files(checkout [pyscheduler spec](https://github.com/xumingming/pyscheduler/blob/master/spec.md) for details)
+  
 ![snapshot](snapshot.png)
-
-## Advanced Features
-
-### Support username/password
-
-### Other features
-
-* Now it supports searching!
-* Now it supports a header bar(which provides navigation and search), and can be disabled by `show_header=false` parameter in request parameter.
-* Now it dont list hidden files
-* Now we support login/logout

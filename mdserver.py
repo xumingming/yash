@@ -260,20 +260,16 @@ def directories(filename):
     return dict(filemap = filemap, relativepath = relativepath, request = request, is_logined = is_logined())
 
 if __name__ == '__main__':
-    opts, args = getopt.getopt(sys.argv[1:], 'p:m:')
+    opts, args = getopt.getopt(sys.argv[1:], 'p:h')
 
     port = 8000
-    MDSERVER_HOME = None
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
         if opt_name == '-p':
             port = int(opt_value)
-        elif opt_name == '-m':
-            MDSERVER_HOME = os.path.expanduser(opt_value)
-    
-    if not MDSERVER_HOME:
-        print """Usage: mdserver.py -m <MDSERVER_HOME> -p <port>"""
-    else:
-        bottle.TEMPLATE_PATH = [os.path.join(MDSERVER_HOME, "views")]
+        if opt_name == '-h':
+            print """Usage: mdserver.py -p <port>"""
 
-        bottle.run(app = app, host='0.0.0.0', port=port)
+    MDSERVER_HOME = sys.path[0]            
+    bottle.TEMPLATE_PATH = [os.path.join(MDSERVER_HOME, "views")]
+    bottle.run(app = app, host='0.0.0.0', port=port)
