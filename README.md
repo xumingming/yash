@@ -1,8 +1,8 @@
-# Makedown Server
+# yashserver
 
-Host your local markdown files as webpages.
+Yet another `SimpleHttpServer`.
 
-This little script works very similar with `python -m SimpleHTTPServer`, but it supports markdown files, all files with `.markdown` or `.md` extensions will be served as corresponding HTML webpages, and the pages are beautified with github markdown stylesheet(thanks to https://github.com/sindresorhus/github-markdown-css).
+This little script works very similar with `python -m SimpleHTTPServer`, but it provides much more! 
 
 ## Install
 
@@ -11,19 +11,37 @@ This little script works very similar with `python -m SimpleHTTPServer`, but it 
 	sudo pip install beaker
 	sudo pip install simpleyaml
 	sudo pip install qrcode
-	git clone git@github.com:xumingming/mdserver.git
-	cd mdserver
-	chmod a+x mdserver.py
+	git clone git@github.com:xumingming/yashserver.git
+	cd yashserver
+	chmod a+x yashserver.py
+	mkdir ~/.yashserver
+
+edit `~/.yashserver/config.yaml` and fill it with the following:
+
+```yaml
+roles:
+  home:
+    - home
+    - public
+
+users:
+    yash:
+      password: yash
+      role: super
+    demo:
+      password: demo
+      role: public
+```
 
 ## Usage
 
 Put the following in your `.bashrc`:
 
 ```bash
-alias mdserver='sudo /path/to/your/mdserver.py -p 80'
+alias yashserver='sudo /path/to/your/yashserver.py -p 80'
 ```
 
-Now in any folder you want to serve your files, just run `mdserver`, then visit `http://localhost`, that's it!
+Now in any folder you want to serve your files, just run `yashserver`, then visit `http://localhost`, that's it!
 
 ## Features
 

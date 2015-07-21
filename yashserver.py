@@ -13,14 +13,14 @@ import StringIO
 import parser
 import getopt
 
-MDSERVER_HOME = None
+YASHSERVER_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
-MDSERVER_DATA_HOME = os.path.expanduser("~/.mdserver")
+YASHSERVER_DATA_HOME = os.path.expanduser("~/.yashserver")
 SUPPORTED_PLAIN_FILE_TYPES = ["markdown", "md", "txt", "plan"]
 
 session_opts = {
     'session.type': 'file',
-    'session.data_dir': MDSERVER_DATA_HOME + '/session/',
+    'session.data_dir': YASHSERVER_DATA_HOME + '/session/',
     'session.auto': True,
 }
 
@@ -33,7 +33,7 @@ class User:
 
 class Config:
     def __init__(self):
-        config = simpleyaml.safe_load(open(MDSERVER_DATA_HOME + "/config.yaml"))
+        config = simpleyaml.safe_load(open(YASHSERVER_DATA_HOME + "/config.yaml"))
         self.roles = config["roles"]
         self.roles["public"] = ["public"]
         
@@ -135,7 +135,7 @@ def logout():
 
 @get('/<filename:re:static\/.*\.(css|js|png|jpg|gif|ico)>')
 def static_files(filename):
-    return static_file(filename, root=MDSERVER_HOME + "/")
+    return static_file(filename, root=YASHSERVER_HOME + "/")
 
 @get('/<filename:re:.*\.(png|jpg|gif|ico)>')
 def images(filename):
@@ -268,8 +268,8 @@ if __name__ == '__main__':
         if opt_name == '-p':
             port = int(opt_value)
         if opt_name == '-h':
-            print """Usage: mdserver.py -p <port>"""
+            print """Usage: yashserver.py -p <port>"""
 
-    MDSERVER_HOME = sys.path[0]            
-    bottle.TEMPLATE_PATH = [os.path.join(MDSERVER_HOME, "views")]
+    YASHSERVER_HOME = sys.path[0]            
+    bottle.TEMPLATE_PATH = [os.path.join(YASHSERVER_HOME, "views")]
     bottle.run(app = app, host='0.0.0.0', port=port)
