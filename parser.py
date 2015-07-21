@@ -1,11 +1,13 @@
 #-*-encoding: utf-8 -*-
 import sys
-import getopt
 import re
 import datetime
-import codecs
 from math import ceil
 
+TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s*\])?\s*$"
+HEADER_PATTERN = "^(#{2,})(.*)"
+VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
+PROJECT_START_DATE_PATTERN = 'ProjectStartDate\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 
 class Options:
     def __init__(self):
@@ -57,27 +59,6 @@ class Project:
     def max_task_name_length(self):
         return find_max_length_of_tasks(self.tasks)
 
-def find_max_length_of_tasks(tasks):
-    ret = 0
-    for task in tasks:
-        if actual_width_str(task.name) > ret:
-            ret = actual_width_str(task.name)
-
-    return ret
-
-def actual_width(ch):
-    if ord(ch) < 256:
-        return 1
-
-    return 2
-
-def actual_width_str(input):
-    ret = 0
-    for ch in input:
-        ret += actual_width(ch)
-
-    return ret
-
 class Task:
     def __init__(self, name, man_day, man, status=0):
         """
@@ -93,11 +74,6 @@ class Task:
         self.start_point = None
         self.start_date = None
         self.end_date = None
-
-TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s*\])?\s*$"
-HEADER_PATTERN = "^(#{2,})(.*)"
-VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
-PROJECT_START_DATE_PATTERN = 'ProjectStartDate\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 
 def skip_weekend(date1):
     weekday = date1.isoweekday()
@@ -209,31 +185,37 @@ def parse_vacation_line(vacations, m):
         vacations[man].append(str(xdate))
         xdate += datetime.timedelta(days=1)
 
-def parse(filepath):
-    f = codecs.open(filepath, 'r', 'utf-8')    
-    s = f.read()
-    lines = s.split('\n')
+def parse(content):
+    lines = content.split('\n')
     tasks = []
     vacations = {}
 
     project_start_date = None
     curr_headers = []
     for line in lines:
+        
+        # parse task line
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
             parse_task_line(tasks, curr_headers, m)
-        else:
-            m = re.search(VACATION_PATTERN, line)
-            if m:
-                parse_vacation_line(vacations, m)
-            else:
-                m = re.search(PROJECT_START_DATE_PATTERN, line)
-                if m and m.group(1):
-                    project_start_date = parse_date(m.group(1).strip())
-                else:
-                    m = re.search(HEADER_PATTERN, line)
-                    if m:
-                        parse_header_line(curr_headers, m)
+            continue
+
+        # parse vacation line
+        m = re.search(VACATION_PATTERN, line)
+        if m:
+            parse_vacation_line(vacations, m)
+            continue
+
+        # parse project_start_date line
+        m = re.search(PROJECT_START_DATE_PATTERN, line)
+        if m and m.group(1):
+            project_start_date = parse_date(m.group(1).strip())
+            continue
+
+        # parse header line
+        m = re.search(HEADER_PATTERN, line)
+        if m:
+            parse_header_line(curr_headers, m)
                         
     if not project_start_date:
         raise "Please specify the project start date!"
