@@ -4,7 +4,7 @@
 import os, sys, codecs, re
 import markdown2 as markdown
 import bottle
-from bottle import route, run, template, static_file, get, post, view, request, response, TEMPLATE_PATH, Bottle, hook, redirect
+from bottle import route, run, template, static_file, get, post, view, request, response, TEMPLATE_PATH, Bottle, hook, redirect, abort
 import beaker.middleware
 from search import Search
 import simpleyaml
@@ -163,14 +163,22 @@ def markdown_files_1(text):
 
     return dict(html = html, request = request, is_logined = is_logined())
 
+def read_file_from_disk(fullpath):
+    if not os.path.exists(fullpath):
+        abort(404, "Nothing to see here, honey!")
+        
+    input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
+    text       = input_file.read()
+
+    return text
+
 @route('/<filename:re:.*\.markdown>')
 @route('/<filename:re:.*\.md>')
 @view('markdown')
 def markdown_files(filename):
     fullpath   = os.getcwd() + "/" + filename
-    input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
-    text       = input_file.read()
-
+    text = read_file_from_disk(fullpath)
+    
     return markdown_files_1(text)
 
 def extract_file_title(fullpath):
@@ -196,8 +204,8 @@ def serve_qrcode(filename):
 @view('markdown')
 def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
-    input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
-    text       = input_file.read()
+
+    text = read_file_from_disk(fullpath)
     project = parser.parse(text)
 
     texts = []
@@ -214,14 +222,16 @@ def serve_plan(filename):
             100)
         )
 
+    # 
+    texts.append("> 总人日: {}".format(project.total_man_days))
+
     return markdown_files_1("\n".join(texts))
 
 
 @route('/<filename:re:.*\.xml>')
 def xml_files(filename):
     fullpath   = os.getcwd() + "/" + filename
-    input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
-    text       = input_file.read()
+    text = read_file_from_disk(fullpath)
     response.content_type = "text/xml"
     return text
 
