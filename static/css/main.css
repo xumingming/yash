@@ -3,20 +3,7 @@
     margin-top:15vh;
 }
 
-[class^="icono-"] {
-    color: #ccc;
-}
-
-.icono-file {
-    width: 22px;
-    height: 25px;
-}
-
-.icono-folder {
-    width: 12px;
-    height: 18px;
-}
-
-.list-group-item {
-    padding: 4px 10px;
+.glyphicon {
+    color: #999;
+    padding-right: 5px;
 }

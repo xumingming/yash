@@ -10,9 +10,9 @@
         % for file in filemap:
         <li class="list-group-item">
 		  % if file[2]:
-		  <i class="icono-folder"></i>
+		  <i class="glyphicon glyphicon-folder-close"></i>
 		  % else:
-          <i class="icono-file"></i>
+          <i class="glyphicon glyphicon-file"></i>
           % end
           <a href="{{ relativepath }}{{ file[1] }}">
 			{{ file[0] }}

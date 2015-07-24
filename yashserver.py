@@ -133,7 +133,7 @@ def logout():
     session_set("user", None)
     redirect("/")
 
-@get('/<filename:re:static\/.*\.(css|js|png|jpg|gif|ico)>')
+@get('/<filename:re:static\/.*\.(css|js|png|jpg|gif|ico|woff|woff2|ttf|map)>')
 def static_files(filename):
     return static_file(filename, root=YASHSERVER_HOME + "/")
 
