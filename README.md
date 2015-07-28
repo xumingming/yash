@@ -11,6 +11,7 @@ This little script works very similar with `python -m SimpleHTTPServer`, but it 
 	sudo pip install beaker
 	sudo pip install simpleyaml
 	sudo pip install qrcode
+	sudo pip install pillow	
 	git clone git@github.com:xumingming/yashserver.git
 	cd yashserver
 	chmod a+x yashserver.py
