@@ -243,6 +243,9 @@ def directories(filename):
     if len(filename) == 0:
         relativepath = "/"
 
+    if not os.path.exists(fullpath):
+        abort(404, "Nothing to see here, Honey!")
+        
     files = os.listdir(fullpath)
     files = [x for x in files if not x.startswith(".")]
 
