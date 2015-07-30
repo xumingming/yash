@@ -13,14 +13,14 @@ import StringIO
 import parser
 import getopt
 
-YASHSERVER_HOME = None
+YASH_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
-YASHSERVER_DATA_HOME = os.path.expanduser("~/.yashserver")
+YASH_DATA_HOME = os.path.expanduser("~/.yash")
 SUPPORTED_PLAIN_FILE_TYPES = ["markdown", "md", "txt", "plan"]
 
 session_opts = {
     'session.type': 'file',
-    'session.data_dir': YASHSERVER_DATA_HOME + '/session/',
+    'session.data_dir': YASH_DATA_HOME + '/session/',
     'session.auto': True,
 }
 
@@ -33,7 +33,7 @@ class User:
 
 class Config:
     def __init__(self):
-        config = simpleyaml.safe_load(open(YASHSERVER_DATA_HOME + "/config.yaml"))
+        config = simpleyaml.safe_load(open(YASH_DATA_HOME + "/config.yaml"))
         self.roles = config["roles"]
         self.roles["public"] = ["public"]
         
@@ -135,7 +135,7 @@ def logout():
 
 @get('/<filename:re:static\/.*\.(css|js|png|jpg|gif|ico|woff|woff2|ttf|map)>')
 def static_files(filename):
-    return static_file(filename, root=YASHSERVER_HOME + "/")
+    return static_file(filename, root=YASH_HOME + "/")
 
 @get('/<filename:re:.*\.(png|jpg|gif|ico)>')
 def images(filename):
@@ -172,15 +172,6 @@ def read_file_from_disk(fullpath):
 
     return text
 
-@route('/<filename:re:.*\.markdown>')
-@route('/<filename:re:.*\.md>')
-@view('markdown')
-def markdown_files(filename):
-    fullpath   = os.getcwd() + "/" + filename
-    text = read_file_from_disk(fullpath)
-    
-    return markdown_files_1(text)
-
 def extract_file_title(fullpath):
     input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
     name       = input_file.readline()
@@ -200,8 +191,8 @@ def serve_qrcode(filename):
     contents = buf.getvalue()
     return contents
 
-@get('/<filename:re:.*\.plan>')
-@view('gantt')
+@get('/<filename:re:.*\.plan\.(md|markdown)>')
+@view('markdown')
 def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
 
@@ -255,6 +246,14 @@ def xml_files(filename):
     response.content_type = "text/xml"
     return text
 
+@route('/<filename:re:.*\.(md|markdown)>')
+@view('markdown')
+def markdown_files(filename):
+    fullpath   = os.getcwd() + "/" + filename
+    text = read_file_from_disk(fullpath)
+    
+    return markdown_files_1(text)
+
 @route('/<filename:re:.*>')
 @view('directory')
 def directories(filename):
@@ -301,8 +300,8 @@ if __name__ == '__main__':
         if opt_name == '-p':
             port = int(opt_value)
         if opt_name == '-h':
-            print """Usage: yashserver.py -p <port>"""
+            print """Usage: yash.py -p <port>"""
 
-    YASHSERVER_HOME = sys.path[0]            
-    bottle.TEMPLATE_PATH = [os.path.join(YASHSERVER_HOME, "views")]
+    YASH_HOME = sys.path[0]            
+    bottle.TEMPLATE_PATH = [os.path.join(YASH_HOME, "views")]
     bottle.run(app = app, host='0.0.0.0', port=port)

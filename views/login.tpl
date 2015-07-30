@@ -5,7 +5,7 @@
   <body>
     <div class="container layout-middle col-md-4 col-md-offset-4">
         <form action="/login" method="POST" class="form">
-            <h1 class="text-center">MdServer</h1>
+            <h1 class="text-center">Yash</h1>
             <div class="form-group">
                 <label>Username:</label>
                 <input type="text" class="form-control input-lg" name="username" />
