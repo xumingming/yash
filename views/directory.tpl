@@ -15,7 +15,7 @@
           <i class="glyphicon glyphicon-file"></i>
           % end
           <a href="{{ relativepath }}{{ file[1] }}">
-			{{ file[0] }}
+			{{ file[1] }} &#40; {{ file[0] }} &#41;
 		  </a>
         </li>
         % end

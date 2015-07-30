@@ -1,0 +1,11 @@
+{
+  "name": "yashserver",
+  "private": true,
+  "dependencies": {
+    "jquery": "~1.11.1"
+  },
+  "devDependencies": {
+    "chai": "~3.2.0",
+    "mocha": "~2.2.5"
+  }
+}

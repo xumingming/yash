@@ -201,13 +201,13 @@ def serve_qrcode(filename):
     return contents
 
 @get('/<filename:re:.*\.plan>')
-@view('markdown')
+@view('gantt')
 def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
 
     text = read_file_from_disk(fullpath)
     project = parser.parse(text)
-
+    '''
     texts = []
     texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
     texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
@@ -222,10 +222,30 @@ def serve_plan(filename):
             100)
         )
 
-    # 
     texts.append("> 总人日: {}".format(project.total_man_days))
 
     return markdown_files_1("\n".join(texts))
+    '''
+    # make project info to json
+    texts = []
+    for task in project.tasks:
+        texts.append('''{{
+                    taskName: "{}",
+                    owner: "{}",
+                    cost: {},
+                    start: "{}",
+                    end: "{}",
+                    process: {}
+                    }}
+                '''.format(task.name.encode("utf-8"),
+                        task.man.encode("utf-8"),
+                        task.man_day,
+                        project.task_start_date(task),
+                        project.task_end_date(task),
+                        str(task.status)
+                    ))
+    html = "[{}]".format(",".join(texts))
+    return dict(html = html, request = request, is_logined = is_logined())
 
 
 @route('/<filename:re:.*\.xml>')
