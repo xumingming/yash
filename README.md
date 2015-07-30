@@ -1,4 +1,4 @@
-# yashserver
+# yash
 
 Yet another `SimpleHttpServer`.
 
@@ -12,12 +12,12 @@ This little script works very similar with `python -m SimpleHTTPServer`, but it 
 	sudo pip install simpleyaml
 	sudo pip install qrcode
 	sudo pip install pillow	
-	git clone git@github.com:xumingming/yashserver.git
-	cd yashserver
-	chmod a+x yashserver.py
-	mkdir ~/.yashserver
+	git clone git@github.com:xumingming/yash.git
+	cd yash
+	chmod a+x yash.py
+	mkdir ~/.yash
 
-edit `~/.yashserver/config.yaml` and fill it with the following:
+edit `~/.yash/config.yaml` and fill it with the following:
 
 ```yaml
 roles:
@@ -39,10 +39,10 @@ users:
 Put the following in your `.bashrc`:
 
 ```bash
-alias yashserver='sudo /path/to/your/yashserver.py -p 80'
+alias yash='sudo /path/to/your/yash.py -p 80'
 ```
 
-Now in any folder you want to serve your files, just run `yashserver`, then visit `http://localhost`, that's it!
+Now in any folder you want to serve your files, just run `yash`, then visit `http://localhost`, that's it!
 
 ## Features
 
