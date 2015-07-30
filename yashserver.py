@@ -172,15 +172,6 @@ def read_file_from_disk(fullpath):
 
     return text
 
-@route('/<filename:re:.*\.markdown>')
-@route('/<filename:re:.*\.md>')
-@view('markdown')
-def markdown_files(filename):
-    fullpath   = os.getcwd() + "/" + filename
-    text = read_file_from_disk(fullpath)
-    
-    return markdown_files_1(text)
-
 def extract_file_title(fullpath):
     input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
     name       = input_file.readline()
@@ -200,7 +191,7 @@ def serve_qrcode(filename):
     contents = buf.getvalue()
     return contents
 
-@get('/<filename:re:.*\.plan>')
+@get('/<filename:re:.*\.plan\.(md|markdown)>')
 @view('markdown')
 def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
@@ -234,6 +225,14 @@ def xml_files(filename):
     text = read_file_from_disk(fullpath)
     response.content_type = "text/xml"
     return text
+
+@route('/<filename:re:.*\.(md|markdown)>')
+@view('markdown')
+def markdown_files(filename):
+    fullpath   = os.getcwd() + "/" + filename
+    text = read_file_from_disk(fullpath)
+    
+    return markdown_files_1(text)
 
 @route('/<filename:re:.*>')
 @view('directory')
