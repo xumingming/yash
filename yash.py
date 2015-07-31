@@ -12,6 +12,7 @@ import qrcode
 import StringIO
 import parser
 import getopt
+import json
 
 YASH_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
@@ -198,44 +199,42 @@ def serve_plan(filename):
 
     text = read_file_from_disk(fullpath)
     project = parser.parse(text)
-    '''
-    texts = []
-    texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
-    texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
-    for task in project.tasks:
-        texts.append("{} | {} | {} | {} | {} | {}".format(
-            task.name.encode("utf-8"),
-            task.man.encode("utf-8"),
-            task.man_day,
-            project.task_start_date(task), 
-            project.task_end_date(task),
-            str(task.status) + "%",
-            100)
-        )
+    # texts = []
+    # texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
+    # texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
+    # for task in project.tasks:
+    #     texts.append("{} | {} | {} | {} | {} | {}".format(
+    #         task.name.encode("utf-8"),
+    #         task.man.encode("utf-8"),
+    #         task.man_day,
+    #         project.task_start_date(task), 
+    #         project.task_end_date(task),
+    #         str(task.status) + "%",
+    #         100)
+    #     )
 
-    texts.append("> 总人日: {}".format(project.total_man_days))
+    # texts.append("> 总人日: {}".format(project.total_man_days))
 
-    return markdown_files_1("\n".join(texts))
-    '''
+    # return markdown_files_1("\n".join(texts))
+
     # make project info to json
     texts = []
     for task in project.tasks:
-        texts.append('''{{
-                    taskName: "{}",
-                    owner: "{}",
-                    cost: {},
-                    start: "{}",
-                    end: "{}",
-                    process: {}
-                    }}
-                '''.format(task.name.encode("utf-8"),
-                        task.man.encode("utf-8"),
-                        task.man_day,
-                        project.task_start_date(task),
-                        project.task_end_date(task),
-                        str(task.status)
-                    ))
-    html = "[{}]".format(",".join(texts))
+        taskjson = {}
+        taskjson["taskName"] = task.name.encode("utf-8")
+        taskjson["owner"] = task.man.encode("utf-8")
+        taskjson["cost"] = task.man_day
+        taskjson["start"] = str(project.task_start_date(task))
+        taskjson["end"] = str(project.task_end_date(task))
+        taskjson["progress"] = str(task.status)
+        texts.append(taskjson)
+
+    html = json.dumps(texts)
+    html = """<script>
+ a = {}
+</script>
+""".format(html)
+    #html = "[{}]".format(",".join(texts))
     return dict(html = html, request = request, is_logined = is_logined())
 
 
