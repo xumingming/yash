@@ -154,7 +154,7 @@ def search_files():
 
     result = [x for x in result if x[1] is not None]
     result = map(lambda x : [x[0][len(os.getcwd()):len(x[0])], x[1]], result)
-    return dict(results = result, keyword = keyword, request = request)
+    return dict(results = result, keyword = keyword, request = request, is_logined = is_logined())
 
 def markdown_files_1(text):
     html = markdown.markdown(
