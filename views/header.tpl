@@ -34,7 +34,7 @@
             % else:
                 <li><a href="/logout">Logout</a></li>
             % end
-			<li><a href="{{request.url}}.qr">QR Code</a></li>
+			<li class="J-popover" data-placement="bottom" data-trigger="hover" data-html="true" data-toggle="popover" data-content="<img src='{{ request.url }}.qr' style='width:150px;height:150px'>"><a>QR Code</a></li>
           </ul>
           <form class="navbar-form navbar-left" role="search" action="/search" method="GET">
             <div class="form-group">

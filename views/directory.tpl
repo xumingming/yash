@@ -21,5 +21,6 @@
         % end
       </ul>
     </div>
+    % include('footer')
   </body>
 </html>
