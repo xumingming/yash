@@ -134,6 +134,18 @@ def logout():
     session_set("user", None)
     redirect("/")
 
+@get('/system/qr.png')
+def serve_qrcode():
+    filename = request.GET.get("path")
+    actual_path = filename
+    qrcode_img = qrcode.make(actual_path)
+
+    response.content_type = 'image/png'
+    buf = StringIO.StringIO()
+    qrcode_img.save(buf, "PNG")
+    contents = buf.getvalue()
+    return contents
+
 @get('/<filename:re:static\/.*\.(css|js|png|jpg|gif|ico|woff|woff2|ttf|map)>')
 def static_files(filename):
     return static_file(filename, root=YASH_HOME + "/")
@@ -180,17 +192,6 @@ def extract_file_title(fullpath):
     input_file.close()
 
     return name
-
-@get('/<filename:re:.*\.qr>')
-def serve_qrcode(filename):
-    actual_path = request.url[0:-3]
-    qrcode_img = qrcode.make(actual_path)
-
-    response.content_type = 'image/png'
-    buf = StringIO.StringIO()
-    qrcode_img.save(buf, "PNG")
-    contents = buf.getvalue()
-    return contents
 
 @get('/<filename:re:.*\.plan\.(md|markdown)>')
 @view('markdown')
