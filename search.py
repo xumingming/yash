@@ -21,11 +21,12 @@ class Search:
         ret = []
         for root, dirlist, filelist in os.walk(self.search_path, followlinks=True):
             for filename in filelist:
-                for file_filter in self.file_filter:
-                    if fnmatch.fnmatch(filename, file_filter):
-                        result = self.search_file(os.path.join(root, filename))
-                        ret.append(result)
-                        file_count += 1
+                if not filename.startswith("."):
+                    for file_filter in self.file_filter:
+                        if fnmatch.fnmatch(filename, file_filter):
+                            result = self.search_file(os.path.join(root, filename))
+                            ret.append(result)
+                            file_count += 1
 
         return ret
  
