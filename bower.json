@@ -2,7 +2,8 @@
   "name": "yashserver",
   "private": true,
   "dependencies": {
-    "jquery": "~1.11.1"
+    "jquery": "~1.11.1",
+    "moment": "~2.10.6"
   },
   "devDependencies": {
     "chai": "~3.2.0",

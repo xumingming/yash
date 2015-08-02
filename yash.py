@@ -194,7 +194,7 @@ def extract_file_title(fullpath):
     return name
 
 @get('/<filename:re:.*\.plan\.(md|markdown)>')
-@view('markdown')
+@view('gantt')
 def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
 
@@ -231,10 +231,6 @@ def serve_plan(filename):
         texts.append(taskjson)
 
     html = json.dumps(texts)
-    html = """<script>
- a = {}
-</script>
-""".format(html)
     #html = "[{}]".format(",".join(texts))
     return dict(html = html, request = request, is_logined = is_logined())
 

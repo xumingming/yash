@@ -1,0 +1,100 @@
+/* variables */
+@date-width: 50px;
+@task-height: 20px;
+
+.gantt-container {
+    /* common */
+
+    * {
+        box-sizing: border-box;
+    }
+
+    table {
+        font-size: 12px;
+        border-collapse: collapse;
+        table-layout: fixed;
+    }
+
+    td,
+    th {
+        width: @date-width;
+        height: @task-height;
+        border: 1px solid #ccc;
+    }
+
+    th {
+        padding: 0 2px;
+    }
+
+    .table-body {
+        tr:first-child {
+            td {
+                border-top: 0;
+            }
+        }
+    }
+
+    /* container */
+
+    /* left table */
+    .detail-table {
+        float: left;
+        width: 25%;
+
+        td,
+        th {
+            padding: 0 2px;
+        }
+
+        tr {
+            td,
+            th {
+                width: 70%;
+
+                &:first-child {
+                    width: 30%
+                }
+            }
+        }
+    }
+
+    /* right gantt */
+    .gantt-area {
+        float: left;
+        width: 75%;
+
+        th {
+            text-align: center;
+        }
+
+        tr {
+            td,
+            th {
+                &:first-child {
+                    border-left: 0;
+                }
+            }
+        }
+
+        .table-body {
+            position: relative;
+        }
+    }
+
+    .weekend {
+        background-color: #efefef;
+    }
+
+    .gantt {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+
+        div {
+            height: @task-height;
+            background: #ccc;
+        }
+    }
+}

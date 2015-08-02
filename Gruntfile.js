@@ -36,17 +36,17 @@ module.exports = function (grunt) {
         files: ['bower.json'],
         tasks: ['wiredep']
       },
-      js: {
-        files: ['<%= config.app %>/scripts/{,*/}*.js'],
-        tasks: ['jshint'],
-        options: {
-          livereload: '<%= connect.options.livereload %>'
-        }
-      },
-      jstest: {
-        files: ['test/spec/{,*/}*.js'],
-        tasks: ['test:watch']
-      },
+      // js: {
+      //   files: ['<%= config.app %>/scripts/{,*/}*.js'],
+      //   tasks: ['jshint'],
+      //   options: {
+      //     livereload: 9002
+      //   }
+      // },
+      // jstest: {
+      //   files: ['test/spec/{,*/}*.js'],
+      //   tasks: ['test:watch']
+      // },
       gruntfile: {
         files: ['Gruntfile.js']
       },
@@ -58,9 +58,13 @@ module.exports = function (grunt) {
         files: ['<%= config.app %>/styles/{,*/}*.css'],
         tasks: ['newer:copy:styles', 'autoprefixer']
       },
+      browserify: {
+          files: ['<%= config.app %>/scripts/*.js'],
+          tasks: ['browserify:dist']
+      },
       livereload: {
         options: {
-          livereload: '<%= connect.options.livereload %>'
+          livereload: 9001
         },
         files: [
           '<%= config.app %>/{,*/}*.html',
@@ -68,6 +72,17 @@ module.exports = function (grunt) {
           '<%= config.app %>/images/{,*/}*'
         ]
       }
+    },
+
+    // browserify
+    browserify: {
+        dist: {
+            files: {
+                '<%= config.dist %>/scripts/gantt.js': [
+                    '<%= config.app %>/scripts/gantt.js'
+                ]
+            }
+        }
     },
 
     // The actual grunt server settings
