@@ -200,24 +200,6 @@ def serve_plan(filename):
 
     text = read_file_from_disk(fullpath)
     project = parser.parse(text)
-    # texts = []
-    # texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
-    # texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
-    # for task in project.tasks:
-    #     texts.append("{} | {} | {} | {} | {} | {}".format(
-    #         task.name.encode("utf-8"),
-    #         task.man.encode("utf-8"),
-    #         task.man_day,
-    #         project.task_start_date(task), 
-    #         project.task_end_date(task),
-    #         str(task.status) + "%",
-    #         100)
-    #     )
-
-    # texts.append("> 总人日: {}".format(project.total_man_days))
-
-    # return markdown_files_1("\n".join(texts))
-
     # make project info to json
     texts = []
     for task in project.tasks:
@@ -231,10 +213,62 @@ def serve_plan(filename):
         texts.append(taskjson)
 
     html = json.dumps(texts)
-    #html = "[{}]".format(",".join(texts))
     return dict(html = html, request = request, is_logined = is_logined())
 
+@get('/<filename:re:.*\.schedule\.(md|markdown)>')
+@view('markdown')
+def serve_plan1(filename):
+    fullpath   = os.getcwd() + "/" + filename
 
+    print 'serve_plan1'
+    
+    text = read_file_from_disk(fullpath)
+    project = parser.parse(text)
+    texts = []
+    texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
+    texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
+    for task in project.tasks:
+        texts.append("{} | {} | {} | {} | {} | {}".format(
+            task.name.encode("utf-8"),
+            task.man.encode("utf-8"),
+            task.man_day,
+            project.task_start_date(task), 
+            project.task_end_date(task),
+            str(task.status) + "%",
+            100)
+        )
+
+    texts.append("> 总人日: {}\n".format(project.total_man_days))
+
+    man_stats = pretty_print_man_stats(project.tasks)
+    texts.append("> 人员详情: {}\n".format("\n".join(man_stats)))
+
+    return markdown_files_1("\n".join(texts))
+
+def pretty_print_man_stats(tasks):
+    man2days = {}
+    for task in tasks:
+        if not man2days.get(task.man):
+            man2days[task.man] = [0,0] # finished_man_days, total_man_days
+
+        task_status = task.status
+        man_days = task.man_day
+        
+        finished_man_days = task_status * man_days / 100
+        man2days[task.man][0] = man2days[task.man][0] + finished_man_days
+        man2days[task.man][1] = man2days[task.man][1] + man_days
+
+    ret = []
+    for man in sorted(man2days):
+        finished_man_days = man2days[man][0]        
+        total_man_days = man2days[man][1]
+        total_status = (finished_man_days / total_man_days) * 100
+        
+        ret.append(("{}: {:.0f}/{} {:.0f}%".format(man.encode("utf-8"), finished_man_days, total_man_days, total_status)))
+
+    return ret
+
+        
 @route('/<filename:re:.*\.xml>')
 def xml_files(filename):
     fullpath   = os.getcwd() + "/" + filename
@@ -290,7 +324,7 @@ def directories(filename):
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'p:h')
 
-    port = 8000
+    port = 80
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
         if opt_name == '-p':
