@@ -220,23 +220,25 @@ def serve_plan(filename):
 def serve_plan1(filename):
     fullpath   = os.getcwd() + "/" + filename
 
-    print 'serve_plan1'
-    
     text = read_file_from_disk(fullpath)
     project = parser.parse(text)
+
+    man = request.GET.get('man')
+    
     texts = []
     texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
     texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
     for task in project.tasks:
-        texts.append("{} | {} | {} | {} | {} | {}".format(
-            task.name.encode("utf-8"),
-            task.man.encode("utf-8"),
-            task.man_day,
-            project.task_start_date(task), 
-            project.task_end_date(task),
-            str(task.status) + "%",
-            100)
-        )
+        if not man or man == task.man.encode("utf-8"):
+            texts.append("{} | {} | {} | {} | {} | {}".format(
+                task.name.encode("utf-8"),
+                task.man.encode("utf-8"),
+                task.man_day,
+                project.task_start_date(task), 
+                project.task_end_date(task),
+                str(task.status) + "%",
+                100)
+            )
 
     texts.append("> 总人日: {}\n".format(project.total_man_days))
 
