@@ -286,6 +286,12 @@ def markdown_files(filename):
     
     return markdown_files_1(text)
 
+class FileItem:
+    def __init__(self, name, path, is_dir):
+        self.name = name
+        self.path = path
+        self.is_dir = is_dir
+        
 @route('/<filename:re:.*>')
 @view('directory')
 def directories(filename):
@@ -319,9 +325,9 @@ def directories(filename):
             if extension in SUPPORTED_PLAIN_FILE_TYPES:
                 name = extract_file_title(fullpath)
 
-        filemap.append([name, f, is_dir])
+        filemap.append(FileItem(name, f, is_dir))
 
-    return dict(filemap = filemap, relativepath = relativepath, request = request, is_logined = is_logined())
+    return dict(files = filemap, relativepath = relativepath, request = request, is_logined = is_logined())
 
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'p:h')
