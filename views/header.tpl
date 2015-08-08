@@ -45,7 +45,7 @@
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
-% if len(breadcrumbs) > 0:
+% if defined("breadcrumbs") and len(breadcrumbs) > 0:
 	<ol class="breadcrumb">
 		% for idx, breadcrumb in enumerate(breadcrumbs):
 		  %if idx < len(breadcrumbs) - 1:

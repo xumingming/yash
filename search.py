@@ -9,6 +9,12 @@ class Item:
         self.prefix = prefix
         self.suffix = suffix
         
+class SearchResult:
+    def __init__(self, fullpath, items):
+        self.fullpath = fullpath
+        self.items = items
+        self.name = None
+    
 class Search:
     def __init__(self, path, search_string, file_filter):
         self.search_path = path
@@ -39,9 +45,8 @@ class Search:
         if self.search_string in content:
             contents = self.cutout_content(content)
             
-        return [filepath, contents]
+        return SearchResult(filepath, contents)
 
-        return None
     def cutout_content(self, content):
         current_pos = 0
         search_string_len = len(self.search_string)

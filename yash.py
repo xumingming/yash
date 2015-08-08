@@ -6,7 +6,7 @@ import markdown2 as markdown
 import bottle
 from bottle import route, run, template, static_file, get, post, view, request, response, TEMPLATE_PATH, Bottle, hook, redirect, abort
 import beaker.middleware
-from search import Search
+from search import Search, SearchResult
 import simpleyaml
 import qrcode
 import StringIO
@@ -164,9 +164,15 @@ def search_files():
     s = Search(os.getcwd(), keyword.decode("utf-8"), ("*.markdown", "*.md"))
     result = s.walk()
 
-    result = [x for x in result if x[1] is not None]
-    result = map(lambda x : [x[0][len(os.getcwd()):len(x[0])], x[1]], result)
-    return dict(results = result, keyword = keyword, request = request, is_logined = is_logined())
+    result = [x for x in result if x.items is not None]
+    newresult = []
+    for x in result:
+        x = SearchResult(x.fullpath[len(os.getcwd()):len(x.fullpath)], x.items)
+        x.name = extract_file_title_by_fullurl(x.fullpath)
+        
+        newresult.append(x)
+    
+    return dict(results = newresult, keyword = keyword, request = request, is_logined = is_logined())
 
 def markdown_files_1(text, fullurl):
     html = markdown.markdown(
