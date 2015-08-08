@@ -47,8 +47,12 @@
     </nav>
 % if len(breadcrumbs) > 0:
 	<ol class="breadcrumb">
-		% for breadcrumb in breadcrumbs:
+		% for idx, breadcrumb in enumerate(breadcrumbs):
+		  %if idx < len(breadcrumbs) - 1:
 			  <li><a href="{{breadcrumb.path}}">{{breadcrumb.name}}</a></li>
+	      %else:
+		  	  <li class="active">{{breadcrumb.name}}</li>
+		  %end
 		% end  
 	</ol>
 % end
