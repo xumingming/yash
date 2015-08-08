@@ -168,13 +168,17 @@ def search_files():
     result = map(lambda x : [x[0][len(os.getcwd()):len(x[0])], x[1]], result)
     return dict(results = result, keyword = keyword, request = request, is_logined = is_logined())
 
-def markdown_files_1(text):
+def markdown_files_1(text, fullurl):
     html = markdown.markdown(
         text,
         extras        = ["tables", "code-friendly", "fenced-code-blocks"]
     )
 
-    return dict(html = html, request = request, is_logined = is_logined())
+    breadcrumbs = calculate_breadcrumbs(fullurl)
+    return dict(html = html,
+                request = request,
+                is_logined = is_logined(),
+                breadcrumbs = breadcrumbs)
 
 def read_file_from_disk(fullpath):
     if not os.path.exists(fullpath):
@@ -193,6 +197,22 @@ def extract_file_title(fullpath):
 
     return name
 
+def extract_file_title_by_fullurl(fullurl):
+    physical_path = os.getcwd() + fullurl
+    name = os.path.basename(physical_path)
+    is_dir = os.path.isdir(physical_path)
+    if os.path.isdir(physical_path):
+        namepath = physical_path + "/.name"
+        if os.path.exists(namepath):
+            name = extract_file_title(namepath)
+    else:
+        extension_idx = name.rfind(".")
+        extension = name[extension_idx + 1:]
+        if extension in SUPPORTED_PLAIN_FILE_TYPES:
+            name = extract_file_title(physical_path)
+
+    return name
+    
 @get('/<filename:re:.*\.plan\.(md|markdown)>')
 @view('gantt')
 def serve_plan(filename):
@@ -245,7 +265,7 @@ def serve_plan1(filename):
     man_stats = pretty_print_man_stats(project.tasks)
     texts.append("> 人员详情: {}\n".format("\n".join(man_stats)))
 
-    return markdown_files_1("\n".join(texts))
+    return markdown_files_1("\n".join(texts), "/" + filename)
 
 def pretty_print_man_stats(tasks):
     man2days = {}
@@ -284,50 +304,67 @@ def markdown_files(filename):
     fullpath   = os.getcwd() + "/" + filename
     text = read_file_from_disk(fullpath)
     
-    return markdown_files_1(text)
+    return markdown_files_1(text, "/" + filename)
 
 class FileItem:
     def __init__(self, name, path, is_dir):
         self.name = name
         self.path = path
         self.is_dir = is_dir
-        
+
+    def __repr__(self):
+        return "{}[{}]".format(self.name.encode('UTF-8'), self.path)
+
+
+def calculate_breadcrumbs(path):
+    path = path.strip("/")
+    if len(path) == 0:
+        return []
+    
+    paths = path.split("/")
+    ret = []
+
+    totalpath = ""
+    for p in paths:
+        realpath = totalpath + "/" + p
+        name = extract_file_title_by_fullurl(realpath)        
+        ret.append(FileItem(name, realpath, False))
+        totalpath = realpath
+
+    return ret
+    
 @route('/<filename:re:.*>')
 @view('directory')
 def directories(filename):
-    fullpath = os.getcwd() + "/" + filename
-    relativepath = "/" + filename + "/"
+    physical_path = os.getcwd() + "/" + filename
     if len(filename) == 0:
-        relativepath = "/"
-
-    if not os.path.exists(fullpath):
+        fullurl = ""
+    else:
+        fullurl = "/" + filename
+        
+    if not os.path.exists(physical_path):
         abort(404, "Nothing to see here, Honey!")
         
-    files = os.listdir(fullpath)
+    files = os.listdir(physical_path)
     files = [x for x in files if not x.startswith(".")]
 
     role = session_get_role()
-    if relativepath == "/" and not role == "super":
+    if fullurl == "/" and not role == "super":
         files = [x for x in files if config.has_right(role, x)]
         
     filemap = []
     for f in files:
-        fullpath = os.getcwd() + relativepath + "/" + f
-        name = f
-        is_dir = os.path.isdir(fullpath)
-        if os.path.isdir(fullpath):
-            namepath = fullpath + "/.name"
-            if os.path.exists(namepath):
-                name = extract_file_title(namepath)
-        else:
-            extension_idx = f.rfind(".")
-            extension = f[extension_idx + 1:]
-            if extension in SUPPORTED_PLAIN_FILE_TYPES:
-                name = extract_file_title(fullpath)
-
-        filemap.append(FileItem(name, f, is_dir))
-
-    return dict(files = filemap, relativepath = relativepath, request = request, is_logined = is_logined())
+        newfullurl = fullurl + "/" + f
+        name = extract_file_title_by_fullurl(newfullurl)
+        is_dir = os.path.isdir(physical_path + "/" + f)
+        filemap.append(FileItem(name, newfullurl, is_dir))
+        
+    breadcrumbs = calculate_breadcrumbs(fullurl)        
+    return dict(files = filemap,
+                fullurl = fullurl,
+                breadcrumbs = breadcrumbs,
+                request = request,
+                is_logined = is_logined())
 
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'p:h')

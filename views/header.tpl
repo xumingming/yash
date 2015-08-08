@@ -41,10 +41,19 @@
               <input type="text" class="form-control" placeholder="Search" name="w">
             </div>
             <button type="submit" class="btn btn-default">Search</button>
-          </form>
+          </form>		  
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
+% if len(breadcrumbs) > 0:
+	<ol class="breadcrumb">
+		% for breadcrumb in breadcrumbs:
+			  <li><a href="{{breadcrumb.path}}">{{breadcrumb.name}}</a></li>
+		% end  
+	</ol>
+% end
 </div>
+
+
 % end
 

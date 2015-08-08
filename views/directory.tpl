@@ -14,7 +14,7 @@
 		  % else:
           <i class="glyphicon glyphicon-file"></i>
           % end
-          <a href="{{ relativepath }}{{ file.path }}" alt="{{file.path}}">
+          <a href="{{ file.path }}" alt="{{file.path}}">
 			{{ file.name }}
 		  </a>
         </li>
