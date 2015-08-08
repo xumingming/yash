@@ -41,10 +41,23 @@
               <input type="text" class="form-control" placeholder="Search" name="w">
             </div>
             <button type="submit" class="btn btn-default">Search</button>
-          </form>
+          </form>		  
         </div><!-- /.navbar-collapse -->
       </div><!-- /.container-fluid -->
     </nav>
+% if defined("breadcrumbs") and len(breadcrumbs) > 0:
+	<ol class="breadcrumb">
+		% for idx, breadcrumb in enumerate(breadcrumbs):
+		  %if idx < len(breadcrumbs) - 1:
+			  <li><a href="{{breadcrumb.path}}">{{breadcrumb.name}}</a></li>
+	      %else:
+		  	  <li class="active">{{breadcrumb.name}}</li>
+		  %end
+		% end  
+	</ol>
+% end
 </div>
+
+
 % end
 

@@ -7,15 +7,15 @@
 
     <div class="container">
       <ul class="list-group">
-        % for file in filemap:
+        % for file in files:
         <li class="list-group-item">
-		  % if file[2]:
+		  % if file.is_dir:
 		  <i class="glyphicon glyphicon-folder-close"></i>
 		  % else:
           <i class="glyphicon glyphicon-file"></i>
           % end
-          <a href="{{ relativepath }}{{ file[1] }}">
-			{{ file[1] }} &#40; {{ file[0] }} &#41;
+          <a href="{{ file.path }}" alt="{{file.path}}">
+			{{ file.name }}
 		  </a>
         </li>
         % end

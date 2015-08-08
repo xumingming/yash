@@ -6,7 +6,7 @@ import markdown2 as markdown
 import bottle
 from bottle import route, run, template, static_file, get, post, view, request, response, TEMPLATE_PATH, Bottle, hook, redirect, abort
 import beaker.middleware
-from search import Search
+from search import Search, SearchResult
 import simpleyaml
 import qrcode
 import StringIO
@@ -164,17 +164,27 @@ def search_files():
     s = Search(os.getcwd(), keyword.decode("utf-8"), ("*.markdown", "*.md"))
     result = s.walk()
 
-    result = [x for x in result if x[1] is not None]
-    result = map(lambda x : [x[0][len(os.getcwd()):len(x[0])], x[1]], result)
-    return dict(results = result, keyword = keyword, request = request, is_logined = is_logined())
+    result = [x for x in result if x.items is not None]
+    newresult = []
+    for x in result:
+        x = SearchResult(x.fullpath[len(os.getcwd()):len(x.fullpath)], x.items)
+        x.name = extract_file_title_by_fullurl(x.fullpath)
+        
+        newresult.append(x)
+    
+    return dict(results = newresult, keyword = keyword, request = request, is_logined = is_logined())
 
-def markdown_files_1(text):
+def markdown_files_1(text, fullurl):
     html = markdown.markdown(
         text,
         extras        = ["tables", "code-friendly", "fenced-code-blocks"]
     )
 
-    return dict(html = html, request = request, is_logined = is_logined())
+    breadcrumbs = calculate_breadcrumbs(fullurl)
+    return dict(html = html,
+                request = request,
+                is_logined = is_logined(),
+                breadcrumbs = breadcrumbs)
 
 def read_file_from_disk(fullpath):
     if not os.path.exists(fullpath):
@@ -193,6 +203,22 @@ def extract_file_title(fullpath):
 
     return name
 
+def extract_file_title_by_fullurl(fullurl):
+    physical_path = os.getcwd() + fullurl
+    name = os.path.basename(physical_path)
+    is_dir = os.path.isdir(physical_path)
+    if os.path.isdir(physical_path):
+        namepath = physical_path + "/.name"
+        if os.path.exists(namepath):
+            name = extract_file_title(namepath)
+    else:
+        extension_idx = name.rfind(".")
+        extension = name[extension_idx + 1:]
+        if extension in SUPPORTED_PLAIN_FILE_TYPES:
+            name = extract_file_title(physical_path)
+
+    return name
+    
 @get('/<filename:re:.*\.plan\.(md|markdown)>')
 @view('gantt')
 def serve_plan(filename):
@@ -200,24 +226,6 @@ def serve_plan(filename):
 
     text = read_file_from_disk(fullpath)
     project = parser.parse(text)
-    # texts = []
-    # texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
-    # texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
-    # for task in project.tasks:
-    #     texts.append("{} | {} | {} | {} | {} | {}".format(
-    #         task.name.encode("utf-8"),
-    #         task.man.encode("utf-8"),
-    #         task.man_day,
-    #         project.task_start_date(task), 
-    #         project.task_end_date(task),
-    #         str(task.status) + "%",
-    #         100)
-    #     )
-
-    # texts.append("> 总人日: {}".format(project.total_man_days))
-
-    # return markdown_files_1("\n".join(texts))
-
     # make project info to json
     texts = []
     for task in project.tasks:
@@ -231,10 +239,64 @@ def serve_plan(filename):
         texts.append(taskjson)
 
     html = json.dumps(texts)
-    #html = "[{}]".format(",".join(texts))
     return dict(html = html, request = request, is_logined = is_logined())
 
+@get('/<filename:re:.*\.schedule\.(md|markdown)>')
+@view('markdown')
+def serve_plan1(filename):
+    fullpath   = os.getcwd() + "/" + filename
 
+    text = read_file_from_disk(fullpath)
+    project = parser.parse(text)
+
+    man = request.GET.get('man')
+    
+    texts = []
+    texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
+    texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
+    for task in project.tasks:
+        if not man or man == task.man.encode("utf-8"):
+            texts.append("{} | {} | {} | {} | {} | {}".format(
+                task.name.encode("utf-8"),
+                task.man.encode("utf-8"),
+                task.man_day,
+                project.task_start_date(task), 
+                project.task_end_date(task),
+                str(task.status) + "%",
+                100)
+            )
+
+    texts.append("> 总人日: {}\n".format(project.total_man_days))
+
+    man_stats = pretty_print_man_stats(project.tasks)
+    texts.append("> 人员详情: {}\n".format("\n".join(man_stats)))
+
+    return markdown_files_1("\n".join(texts), "/" + filename)
+
+def pretty_print_man_stats(tasks):
+    man2days = {}
+    for task in tasks:
+        if not man2days.get(task.man):
+            man2days[task.man] = [0,0] # finished_man_days, total_man_days
+
+        task_status = task.status
+        man_days = task.man_day
+        
+        finished_man_days = task_status * man_days / 100
+        man2days[task.man][0] = man2days[task.man][0] + finished_man_days
+        man2days[task.man][1] = man2days[task.man][1] + man_days
+
+    ret = []
+    for man in sorted(man2days):
+        finished_man_days = man2days[man][0]        
+        total_man_days = man2days[man][1]
+        total_status = (finished_man_days / total_man_days) * 100
+        
+        ret.append(("{}: {:.0f}/{} {:.0f}%".format(man.encode("utf-8"), finished_man_days, total_man_days, total_status)))
+
+    return ret
+
+        
 @route('/<filename:re:.*\.xml>')
 def xml_files(filename):
     fullpath   = os.getcwd() + "/" + filename
@@ -248,49 +310,72 @@ def markdown_files(filename):
     fullpath   = os.getcwd() + "/" + filename
     text = read_file_from_disk(fullpath)
     
-    return markdown_files_1(text)
+    return markdown_files_1(text, "/" + filename)
 
+class FileItem:
+    def __init__(self, name, path, is_dir):
+        self.name = name
+        self.path = path
+        self.is_dir = is_dir
+
+    def __repr__(self):
+        return "{}[{}]".format(self.name.encode('UTF-8'), self.path)
+
+
+def calculate_breadcrumbs(path):
+    path = path.strip("/")
+    if len(path) == 0:
+        return []
+    
+    paths = path.split("/")
+    ret = []
+
+    totalpath = ""
+    for p in paths:
+        realpath = totalpath + "/" + p
+        name = extract_file_title_by_fullurl(realpath)        
+        ret.append(FileItem(name, realpath, False))
+        totalpath = realpath
+
+    return ret
+    
 @route('/<filename:re:.*>')
 @view('directory')
 def directories(filename):
-    fullpath = os.getcwd() + "/" + filename
-    relativepath = "/" + filename + "/"
+    physical_path = os.getcwd() + "/" + filename
     if len(filename) == 0:
-        relativepath = "/"
-
-    if not os.path.exists(fullpath):
+        fullurl = ""
+    else:
+        fullurl = "/" + filename
+        
+    if not os.path.exists(physical_path):
         abort(404, "Nothing to see here, Honey!")
         
-    files = os.listdir(fullpath)
+    files = os.listdir(physical_path)
     files = [x for x in files if not x.startswith(".")]
 
     role = session_get_role()
-    if relativepath == "/" and not role == "super":
+    if fullurl == "/" and not role == "super":
         files = [x for x in files if config.has_right(role, x)]
         
     filemap = []
     for f in files:
-        fullpath = os.getcwd() + relativepath + "/" + f
-        name = f
-        is_dir = os.path.isdir(fullpath)
-        if os.path.isdir(fullpath):
-            namepath = fullpath + "/.name"
-            if os.path.exists(namepath):
-                name = extract_file_title(namepath)
-        else:
-            extension_idx = f.rfind(".")
-            extension = f[extension_idx + 1:]
-            if extension in SUPPORTED_PLAIN_FILE_TYPES:
-                name = extract_file_title(fullpath)
-
-        filemap.append([name, f, is_dir])
-
-    return dict(filemap = filemap, relativepath = relativepath, request = request, is_logined = is_logined())
+        newfullurl = fullurl + "/" + f
+        name = extract_file_title_by_fullurl(newfullurl)
+        is_dir = os.path.isdir(physical_path + "/" + f)
+        filemap.append(FileItem(name, newfullurl, is_dir))
+        
+    breadcrumbs = calculate_breadcrumbs(fullurl)        
+    return dict(files = filemap,
+                fullurl = fullurl,
+                breadcrumbs = breadcrumbs,
+                request = request,
+                is_logined = is_logined())
 
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'p:h')
 
-    port = 8000
+    port = 80
     for opt_name, opt_value in opts:
         opt_value = opt_value.strip()
         if opt_name == '-p':
