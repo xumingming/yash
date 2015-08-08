@@ -11,8 +11,7 @@ var Gantt = function(opt){
         _.extend(this, opt);
         this.init();
     },
-    DATE_WIDTH = 50, // width of each day in gantt
-    TASK_HEIGHT = 20; // height of each task in gantt
+    DATE_WIDTH = 50; // width of each day in gantt
 
 Gantt.prototype = {
     init: function(){
@@ -24,6 +23,7 @@ Gantt.prototype = {
             tasks: data,
             dates: dates
         });
+        console.log(data);
         this._renderTasks(tasksPosition);
     },
     _getDates: function(start, end){
@@ -51,11 +51,26 @@ Gantt.prototype = {
          * @return      : {Array}
          */
 
+        var owners = {};
         return _.map(tasks, function(task, i){
-            return {
-                left: utils.datetime.getRangeDays(projectStartDate, task.start) * DATE_WIDTH,
-                width: task.cost * DATE_WIDTH,
-                top: TASK_HEIGHT
+            // conside about half day
+            var extra = 0;
+            if (!owners[task.owner]) {
+                owners[task.owner] = {
+                    end: task.end,
+                    extra: 0
+                };
+            } else if(task.start === owners[task.owner].end){
+                // if this task's start date is same with last task's end date
+                extra = owners[task.owner].extra + task.cost;
+                extra = owners[task.owner].extra = extra - Math.floor(extra);
+                owners[task.owner].end = task.end;
+            } else {
+                owners[task.owner].end = task.end;
+            }
+            return  {
+                left: (utils.datetime.getRangeDays(projectStartDate, task.start) + extra) * DATE_WIDTH,
+                width: task.cost * DATE_WIDTH
             };
         });
     },
@@ -97,8 +112,7 @@ Gantt.prototype = {
         var $blocks = this.container.find('.gantt div');
         _.each($blocks, function(block, i){
             var pos = positions[i];
-            block.setAttribute('style', 'transform:translate(%left, %top);width:%wh'.replace('%left', pos.left + 'px')
-                              .replace('%top', pos.top + 'px')
+            block.setAttribute('style', 'transform:translate(%left, 0);width:%wh'.replace('%left', pos.left + 'px')
                               .replace('%wh', pos.width + 'px'));
         });
     },
@@ -107,7 +121,6 @@ Gantt.prototype = {
     }
 };
 
-console.log($('#__TEMPLATE__gantt'));
 new Gantt({
     template: $('#__TEMPLATE__gantt').html(),
     data: window.data,

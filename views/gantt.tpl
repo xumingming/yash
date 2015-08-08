@@ -13,53 +13,51 @@
     </script>
     <script type="text/template" id="__TEMPLATE__gantt">
         <div class="gantt-container">
-            <div class="gantt-container">
-                <div class="detail-table">
-                    <div class="table-header">
-                        <table>
-                            <tr>
-                                <th>owner</th>
-                                <th>taskName</th>
-                            </tr>
-                        </table>
-                    </div>
-                    <div class="table-body">
-                        <table>
-                            \<% _.each(tasks, function(task){%>
-                                <tr>
-                                    <td><%= task.owner %></td>
-                                    <td title="<%= task.taskName %>"><%= task.taskName %></td>
-                                </tr>
-                            \<%});%>
-                        </table>
-                    </div>
+            <div class="detail-table sub-container">
+                <div class="table-header">
+                    <table>
+                        <tr>
+                            <th>owner</th>
+                            <th>taskName</th>
+                        </tr>
+                    </table>
                 </div>
-                <div class="gantt-area">
-                    <!-- draw background -->
-                    <div class="table-header">
-                        <table>
+                <div class="table-body">
+                    <table>
+                        \<% _.each(tasks, function(task){%>
+                            <tr>
+                                <td><%= task.owner %></td>
+                                <td class="ellipsis" title="<%= task.taskName %>"><%= task.taskName %></td>
+                            </tr>
+                        \<%});%>
+                    </table>
+                </div>
+            </div>
+            <div class="gantt-area sub-container">
+                <!-- draw background -->
+                <div class="table-header">
+                    <table>
+                        <tr>
+                            \<%_.each(dates, function(date){%>
+                                <th><%= date.name %></th>
+                            \<%});%>
+                        </tr>
+                    </table>
+                </div>
+                <div class="table-body">
+                    <table>
+                        \<%_.each(tasks, function(){%>
                             <tr>
                                 \<%_.each(dates, function(date){%>
-                                    <th><%= date.name %></th>
+                                    <td class="<%if(date.weekend){%>weekend<%}%>"></td>
                                 \<%});%>
                             </tr>
-                        </table>
-                    </div>
-                    <div class="table-body">
-                        <table>
-                            \<%_.each(tasks, function(){%>
-                                <tr>
-                                    \<%_.each(dates, function(date){%>
-                                        <td class="<%if(date.weekend){%>weekend<%}%>"></td>
-                                    \<%});%>
-                                </tr>
-                            \<%});%>
-                        </table>
-                        <div class="gantt">
-                            \<%_.each(tasks, function(task){%>
-                                <div></div>
-                            \<%});%>
-                        </div>
+                        \<%});%>
+                    </table>
+                    <div class="gantt">
+                        \<%_.each(tasks, function(task){%>
+                            <div></div>
+                        \<%});%>
                     </div>
                 </div>
             </div>
