@@ -8,4 +8,10 @@ $(function(){
 
     // initialize all popover
     $('.J-popover').popover();
+
+	$('#filterByMan').on('change', function() {
+		var selectedMan = $('#filterByMan').val();
+		alert(window.location);
+		window.location = window.location + "?man=" + selectedMan;
+	})
 });

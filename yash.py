@@ -226,24 +226,28 @@ def extract_file_title_by_fullurl(fullurl):
 @view('gantt')
 def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
-
+    man = request.GET.get('man')
+    
     text = read_file_from_disk(fullpath)
     project = parser.parse(text)
     # make project info to json
     texts = []
     for idx, task in enumerate(project.tasks):
-        taskjson = {}
-        taskjson["taskName"] = task.name.encode("utf-8")
-        taskjson["owner"] = task.man.encode("utf-8")
-        taskjson["cost"] = task.man_day
-        taskjson["start"] = str(project.task_start_date(task))
-        taskjson["end"] = str(project.task_end_date(task))
-        taskjson["progress"] = str(task.status)
-        texts.append(taskjson)
+        if not man or man == task.man.encode("utf-8"):
+            taskjson = {}
+            taskjson["taskName"] = task.name.encode("utf-8")
+            taskjson["owner"] = task.man.encode("utf-8")
+            taskjson["cost"] = task.man_day
+            taskjson["start"] = str(project.task_start_date(task))
+            taskjson["end"] = str(project.task_end_date(task))
+            taskjson["progress"] = str(task.status)
+            texts.append(taskjson)
 
     html = json.dumps(texts)
     breadcrumbs = calculate_breadcrumbs("/" + filename)            
-    return dict(html = html, breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
+    return dict(html = html,
+                project = project,
+                breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
 
 @get('/<filename:re:.*\.schedule\.(md|markdown)>')
 @view('markdown')

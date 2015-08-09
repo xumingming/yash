@@ -12,6 +12,11 @@
         var data = {{ !html }}
     </script>
     <script type="text/template" id="__TEMPLATE__gantt">
+      <select id="filterByMan">
+		%for man in project.mans:
+		  <option>{{man}}</option>
+     	%end
+		</select>
         <div class="gantt-container">
             <div class="detail-table sub-container">
                 <div class="table-header">
