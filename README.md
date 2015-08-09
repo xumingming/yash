@@ -66,6 +66,8 @@ npm install
 Then still in the root path of yash, run command below:
 
 ```
+grunt browserify
+grunt less
 grunt watch
 ```
 
