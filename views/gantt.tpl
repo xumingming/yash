@@ -12,11 +12,20 @@
         var data = {{ !html }}
     </script>
     <script type="text/template" id="__TEMPLATE__gantt">
-      <select id="filterByMan">
-		%for man in project.mans:
-		  <option>{{man}}</option>
-     	%end
+	  <form action="/">
+        责任人:
+		<select id="filterByMan">
+		  <option value="All">All</option>
+		  %for man in project.mans:
+		      %if selected_man == man.encode("utf-8"):
+		          <option selected>{{man}}</option>
+		      %else:
+         		  <option>{{man}}</option>
+              %end
+     	  %end
 		</select>
+		
+	  </form>
         <div class="gantt-container">
             <div class="detail-table sub-container">
                 <div class="table-header">

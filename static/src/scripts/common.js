@@ -11,7 +11,10 @@ $(function(){
 
 	$('#filterByMan').on('change', function() {
 		var selectedMan = $('#filterByMan').val();
-		alert(window.location);
-		window.location = window.location + "?man=" + selectedMan;
+		if (selectedMan === "All") {
+			window.location = window.location.pathname;
+		} else {
+			window.location = window.location.pathname + "?man=" + selectedMan;
+		}
 	})
 });

@@ -16,7 +16,7 @@ var Gantt = function(opt){
 
 Gantt.prototype = {
     init: function(){
-        var data = _.sortBy(this.data, 'owner'),
+        var data = this.data,
             maxRange = this._getMaxRange(data),
             tasksPosition = this._getTasksPosition(data, maxRange[0]),
             dates = this._getDates(maxRange[0], maxRange[1]);

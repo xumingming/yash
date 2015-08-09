@@ -247,6 +247,7 @@ def serve_plan(filename):
     breadcrumbs = calculate_breadcrumbs("/" + filename)            
     return dict(html = html,
                 project = project,
+                selected_man = man,
                 breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
 
 @get('/<filename:re:.*\.schedule\.(md|markdown)>')
