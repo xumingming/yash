@@ -15,7 +15,7 @@ var Gantt = function(opt){
 
 Gantt.prototype = {
     init: function(){
-        var data = this.data,
+        var data = _.sortBy(this.data, 'owner'),
             maxRange = this._getMaxRange(data),
             tasksPosition = this._getTasksPosition(data, maxRange[0]),
             dates = this._getDates(maxRange[0], maxRange[1]);
@@ -56,18 +56,12 @@ Gantt.prototype = {
             // conside about half day
             var extra = 0;
             if (!owners[task.owner]) {
-                owners[task.owner] = {
-                    end: task.end,
-                    extra: 0
-                };
-            } else if(task.start === owners[task.owner].end){
+                owners[task.owner] = [];
+            } else if(-1 !== _.indexOf(owners[task.owner], task.start)){
                 // if this task's start date is same with last task's end date
-                extra = owners[task.owner].extra + task.cost;
-                extra = owners[task.owner].extra = extra - Math.floor(extra);
-                owners[task.owner].end = task.end;
-            } else {
-                owners[task.owner].end = task.end;
+                extra = 0.5;
             }
+            owners[task.owner].push(task.end);
             return  {
                 left: (utils.datetime.getRangeDays(projectStartDate, task.start) + extra) * DATE_WIDTH,
                 width: task.cost * DATE_WIDTH,
