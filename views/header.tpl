@@ -1,14 +1,3 @@
-<%
-    parent_path = request.path
-    last_index = parent_path.rfind("/")
-    if last_index >= 0:
-        parent_path = parent_path[0:last_index]
-	end
-	
-    if parent_path == "":
-        parent_path = "/"
-	end
-%>
 % if not request.GET.get('show_header') == 'false':
 <div>
     <nav class="navbar navbar-default">
@@ -27,8 +16,6 @@
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
-            <li><a href="{{ parent_path }}">Up</a></li>
             % if not is_logined:
                 <li><a href="/login">Login</a></li>
             % else:

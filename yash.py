@@ -329,11 +329,11 @@ class FileItem:
 def calculate_breadcrumbs(path):
     path = path.strip("/")
     if len(path) == 0:
-        return []
-    
-    paths = path.split("/")
-    ret = []
-
+        paths = []
+    else:
+        paths = path.split("/")
+        
+    ret = [FileItem("Yash", "/", False)]
     totalpath = ""
     for p in paths:
         realpath = totalpath + "/" + p
