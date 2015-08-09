@@ -242,7 +242,8 @@ def serve_plan(filename):
         texts.append(taskjson)
 
     html = json.dumps(texts)
-    return dict(html = html, request = request, is_logined = is_logined())
+    breadcrumbs = calculate_breadcrumbs("/" + filename)            
+    return dict(html = html, breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
 
 @get('/<filename:re:.*\.schedule\.(md|markdown)>')
 @view('markdown')
