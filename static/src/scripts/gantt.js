@@ -70,7 +70,8 @@ Gantt.prototype = {
             }
             return  {
                 left: (utils.datetime.getRangeDays(projectStartDate, task.start) + extra) * DATE_WIDTH,
-                width: task.cost * DATE_WIDTH
+                width: task.cost * DATE_WIDTH,
+                progress: task.progress
             };
         });
     },
@@ -112,8 +113,19 @@ Gantt.prototype = {
         var $blocks = this.container.find('.gantt div');
         _.each($blocks, function(block, i){
             var pos = positions[i];
-            block.setAttribute('style', 'transform:translate(%left, 0);width:%wh'.replace('%left', pos.left + 'px')
-                              .replace('%wh', pos.width + 'px'));
+            var bgcolor = 'blue'
+            
+            if (pos.progress > 10) {
+                var green = 150 + Math.floor(50 * pos.progress / 100)
+                console.log("green: " + green)
+                bgcolor = 'rgb(60, %green, 60)'.replace('%green', green)
+            }
+            
+            block.setAttribute('style', 'transform:translate(%left, 0); width:%wh; background-color:%bgcolor'
+                               .replace('%left', pos.left + 'px')
+                               .replace('%wh', pos.width + 'px')
+                               .replace('%bgcolor', bgcolor)
+                              );
         });
     },
     _render: function(data){
