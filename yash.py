@@ -111,6 +111,9 @@ def auth_hook():
 def not_authorized():
     return "Access Denied!"
 
+def common_view_args():
+    return dict(request = request, is_logined = is_logined())
+
 @get("/login")
 @view("login")
 def login():
@@ -228,7 +231,7 @@ def serve_plan(filename):
     project = parser.parse(text)
     # make project info to json
     texts = []
-    for task in project.tasks:
+    for idx, task in enumerate(project.tasks):
         taskjson = {}
         taskjson["taskName"] = task.name.encode("utf-8")
         taskjson["owner"] = task.man.encode("utf-8")

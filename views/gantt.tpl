@@ -17,8 +17,8 @@
                 <div class="table-header">
                     <table>
                         <tr>
-                            <th>owner</th>
-                            <th>taskName</th>
+                            <th>责任人</th>						
+                            <th>任务名称</th>						
                         </tr>
                     </table>
                 </div>
@@ -26,8 +26,8 @@
                     <table>
                         \<% _.each(tasks, function(task){%>
                             <tr>
-                                <td><%= task.owner %></td>
-                                <td class="ellipsis" title="<%= task.taskName %>"><%= task.taskName %></td>
+                                <td><%= task.owner %></td>						  
+                                <td class="ellipsis" title="<%= task.taskName %>"><%= task.taskName %></td>						  
                             </tr>
                         \<%});%>
                     </table>
