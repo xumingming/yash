@@ -109,12 +109,12 @@ Gantt.prototype = {
         _.each($blocks, function(block, i){
             var pos = positions[i];
             var bgcolor = 'blue'
-            
-            if (pos.progress > 10) {
-                var green = 150 + Math.floor(50 * pos.progress / 100)
-                console.log("green: " + green)
-                bgcolor = 'rgb(60, %green, 60)'.replace('%green', green)
+            var TASK_COLORS = ['#eee', '#d6e685', '#8cc665', '#44a340', '#1e6823']
+            var colorIdx = pos.progress / 20;
+            if (colorIdx * 20 == pos.progress) {
+                colorIdx -= 1;
             }
+            bgcolor = TASK_COLORS[colorIdx]
             
             block.setAttribute('style', 'transform:translate(%left, 0); width:%wh; background-color:%bgcolor'
                                .replace('%left', pos.left + 'px')
