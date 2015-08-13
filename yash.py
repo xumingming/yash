@@ -91,21 +91,21 @@ def auth_hook():
     #    return
 
     # role based authentication
-    if config.is_login_required(request.path):
-        if not is_logined():
-            redirect("/login")
 
-        role = session_get_role()
-        # super user can access anything
-        if role == "super":
-            return
+    role = session_get_role()
+    # super user can access anything
+    if role == "super":
+        return
         
-        valid_paths = config.get_dirs_by_role(role)
-        for p in valid_paths:
-            if request.path.startswith("/" + p + "/") or request.path == "/" + p:
+    valid_paths = config.get_dirs_by_role(role)
+    for p in valid_paths:
+        if request.path.startswith("/" + p + "/") or request.path == "/" + p:
+            if not (config.is_login_required(request.path) or role == "public") or is_logined():
                 return
-
-        redirect("/not-authorized")
+            else:
+                redirect("/login")
+                    
+    redirect("/not-authorized")
         
 @get("/not-authorized")
 def not_authorized():
