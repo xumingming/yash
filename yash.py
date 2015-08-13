@@ -180,8 +180,10 @@ def markdown_files_1(text, fullurl):
     )
 
     breadcrumbs = calculate_breadcrumbs(fullurl)
+    title = extract_file_title_by_fullurl(fullurl)
     return dict(html = html,
                 request = request,
+                title = title,
                 is_logined = is_logined(),
                 breadcrumbs = breadcrumbs)
 
@@ -240,8 +242,11 @@ def serve_plan(filename):
             texts.append(taskjson)
 
     html = json.dumps(texts)
-    breadcrumbs = calculate_breadcrumbs("/" + filename)            
+    fullurl = "/" + filename
+    breadcrumbs = calculate_breadcrumbs(fullurl)
+    title = extract_file_title_by_fullurl(fullurl)
     return dict(html = html,
+                title = title,
                 project = project,
                 selected_man = man,
                 breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
@@ -307,6 +312,13 @@ def xml_files(filename):
     fullpath   = os.getcwd() + "/" + filename
     text = read_file_from_disk(fullpath)
     response.content_type = "text/xml"
+    return text
+
+@route('/<filename:re:.*\.sql>')
+def sql_files(filename):
+    fullpath   = os.getcwd() + "/" + filename
+    text = read_file_from_disk(fullpath)
+    response.content_type = "text/plain"
     return text
 
 @route('/<filename:re:.*\.(md|markdown)>')
