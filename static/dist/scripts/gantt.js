@@ -20,6 +20,7 @@ Gantt.prototype = {
             maxRange = this._getMaxRange(data),
             tasksPosition = this._getTasksPosition(data, maxRange[0]),
             dates = this._getDates(maxRange[0], maxRange[1]);
+            console.log(this.container.find('.gantt-area table'));
         this._render({
             tasks: data,
             dates: dates
@@ -44,6 +45,22 @@ Gantt.prototype = {
         });
 
     },
+    _getCostWithWeekend: function(start, end, cost, extra){
+        /**
+         * @description : get cost days, take weekend into consideration
+         */
+        var days = utils.datetime.getRangeDays(start, end);
+        if (start === end) {
+            return cost;
+        }
+        if (extra) {
+            return days;
+        }
+        if (cost % 1 === 0.5) {
+            return days + 0.5;
+        }
+        return days + 1;
+    },
     _getTasksPosition: function(tasks, projectStartDate){
         /**
          * @description : compute the position info for drawing gantt of each task
@@ -52,7 +69,8 @@ Gantt.prototype = {
          * @return      : {Array}
          */
 
-        var owners = {};
+        var self = this,
+            owners = {};
         return _.map(tasks, function(task, i){
             // conside about half day
             var extra = 0;
@@ -65,7 +83,7 @@ Gantt.prototype = {
             owners[task.owner].push(task.end);
             return  {
                 left: (utils.datetime.getRangeDays(projectStartDate, task.start) + extra) * DATE_WIDTH,
-                width: task.cost * DATE_WIDTH,
+                width: self._getCostWithWeekend(task.start, task.end, task.cost, extra) * DATE_WIDTH,
                 progress: task.progress
             };
         });
@@ -125,6 +143,7 @@ Gantt.prototype = {
     },
     _render: function(data){
         this.container.html(_.template(this.template)(data));
+        this.container.find('.gantt-area table').width(data.dates.length * DATE_WIDTH);
     }
 };
 

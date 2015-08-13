@@ -12,61 +12,64 @@
         var data = {{ !html }}
     </script>
     <script type="text/template" id="__TEMPLATE__gantt">
-	  <form action="/">
+      <form action="/">
         责任人:
-		<select id="filterByMan">
-		  <option value="All">All</option>
-		  %for man in project.mans:
-		      %if selected_man == man.encode("utf-8"):
-		          <option selected>{{man}}</option>
-		      %else:
-         		  <option>{{man}}</option>
+        <select id="filterByMan">
+          <option value="All">All</option>
+          %for man in project.mans:
+              %if selected_man == man.encode("utf-8"):
+                  <option selected>{{man}}</option>
+              %else:
+                  <option>{{man}}</option>
               %end
-     	  %end
-		</select>
-		
-	  </form>
+          %end
+        </select>
+      </form>
         <div class="gantt-container">
             <div class="detail-table sub-container">
-                <div class="table-header">
-                    <table>
-                        <tr>
-                            <th>任务名称</th>												
-                            <th>责任人</th>						
-                        </tr>
-                    </table>
-                </div>
                 <div class="table-body">
                     <table>
-                        \<% _.each(tasks, function(task){%>
+                        <thead>
                             <tr>
-                                <td class="ellipsis" title="<%= task.taskName %>"><%= task.taskName %></td>						  						  
-                                <td><%= task.owner %></td>						  
+                                <th>任务名称</th>
+                                <th>责任人</th>
+                                <th>开始时间</th>
+                                <th>结束时间</th>
                             </tr>
-                        \<%});%>
+                        </thead>
+                        <tbody>
+                            \<% _.each(tasks, function(task){%>
+                                <tr>
+                                    <td class="ellipsis" title="<%= task.taskName %>"><%= task.taskName %></td>
+                                    <td><%= task.owner %></td>
+                                    <td><%= task.start %></td>
+                                    <td><%= task.end %></td>
+                                </tr>
+                            \<%});%>
+                        </tbody>
                     </table>
                 </div>
             </div>
             <div class="gantt-area sub-container">
                 <!-- draw background -->
-                <div class="table-header">
-                    <table>
-                        <tr>
-                            \<%_.each(dates, function(date){%>
-                                <th><%= date.name %></th>
-                            \<%});%>
-                        </tr>
-                    </table>
-                </div>
                 <div class="table-body">
                     <table>
-                        \<%_.each(tasks, function(){%>
+                        <thead>
                             <tr>
                                 \<%_.each(dates, function(date){%>
-                                    <td class="<%if(date.weekend){%>weekend<%}%>"></td>
+                                    <th<%if(date.isWeekend){%> class="weekend"<%}%>><%= date.name %></th>
                                 \<%});%>
                             </tr>
-                        \<%});%>
+                        </thead>
+                        <tbody>
+                            \<%_.each(tasks, function(){%>
+                                <tr>
+                                    \<%_.each(dates, function(date){%>
+                                        <td class="<%if(date.isWeekend){%>weekend<%}%>"></td>
+                                    \<%});%>
+                                </tr>
+                            \<%});%>
+                        </tbody>
                     </table>
                     <div class="gantt">
                         \<%_.each(tasks, function(task){%>

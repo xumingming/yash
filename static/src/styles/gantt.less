@@ -26,7 +26,6 @@
         font-size: 12px;
         border-collapse: collapse;
         table-layout: fixed;
-        width: 100%;
     }
 
     td,
@@ -41,30 +40,19 @@
         border-top: 0;
     }
 
-    .table-body {
-        tr:first-child {
-            td {
-                border-top: 0;
-            }
-        }
-
-        tr:last-child {
-            td {
-                border-bottom: 0;
-            }
-        }
-
-    }
 
     /* container */
 
     /* left table */
     .detail-table {
         float: left;
-        width: 25%;
+        max-width: 25%;
         .border;
         overflow: auto;
-        border-right: 0;
+
+        table {
+            width: 400px;
+        }
 
         td,
         th {
@@ -73,19 +61,19 @@
 
         td,
         th{
+            width: 80px;
+
             &:first-child {
                 border-left: 0;
+                width: 190px;
             }
-        }
 
-        tr {
-            td,
-            th {
-                width: 20%;
+            &:nth-child(2){
+                width: 50px;
+            }
 
-                &:first-child {
-                    width: 80%
-                }
+            &:last-child {
+                border-right: 0;
             }
         }
     }
@@ -93,7 +81,7 @@
     /* right gantt */
     .gantt-area {
         float: left;
-        width: 75%;
+        max-width: 75%;
         .border;
         overflow: auto;
         border-left: 0;
@@ -129,7 +117,7 @@
 
     .gantt {
         position: absolute;
-        top: 0;
+        top: @task-height;
         left: 0;
         right: 0;
         bottom: 0;

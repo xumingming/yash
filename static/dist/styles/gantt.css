@@ -22,7 +22,6 @@
   font-size: 12px;
   border-collapse: collapse;
   table-layout: fixed;
-  width: 100%;
 }
 .gantt-container td,
 .gantt-container th {
@@ -34,38 +33,39 @@
   padding: 0 2px;
   border-top: 0;
 }
-.gantt-container .table-body tr:first-child td {
-  border-top: 0;
-}
-.gantt-container .table-body tr:last-child td {
-  border-bottom: 0;
-}
 .gantt-container .detail-table {
   float: left;
-  width: 25%;
+  max-width: 25%;
   border: 1px solid #ccc;
   overflow: auto;
-  border-right: 0;
+}
+.gantt-container .detail-table table {
+  width: 400px;
 }
 .gantt-container .detail-table td,
 .gantt-container .detail-table th {
   padding: 0 2px;
 }
+.gantt-container .detail-table td,
+.gantt-container .detail-table th {
+  width: 80px;
+}
 .gantt-container .detail-table td:first-child,
 .gantt-container .detail-table th:first-child {
   border-left: 0;
+  width: 190px;
 }
-.gantt-container .detail-table tr td,
-.gantt-container .detail-table tr th {
-  width: 20%;
+.gantt-container .detail-table td:nth-child(2),
+.gantt-container .detail-table th:nth-child(2) {
+  width: 50px;
 }
-.gantt-container .detail-table tr td:first-child,
-.gantt-container .detail-table tr th:first-child {
-  width: 80%;
+.gantt-container .detail-table td:last-child,
+.gantt-container .detail-table th:last-child {
+  border-right: 0;
 }
 .gantt-container .gantt-area {
   float: left;
-  width: 75%;
+  max-width: 75%;
   border: 1px solid #ccc;
   overflow: auto;
   border-left: 0;
@@ -89,7 +89,7 @@
 }
 .gantt-container .gantt {
   position: absolute;
-  top: 0;
+  top: 20px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -98,4 +98,4 @@
   height: 20px;
   background: #ccc;
 }
-/*# sourceMappingURL=static/dist/styles/gantt.css.map */
+/*# sourceMappingURL=gantt.css.map */
