@@ -87,8 +87,8 @@ def is_logined():
 @hook('before_request')
 def auth_hook():
     # everyone can access "/public"
-    if request.path.startswith("/public") or request.path == "/":
-        return
+    #if request.path.startswith("/public") or request.path == "/":
+    #    return
 
     # role based authentication
     if config.is_login_required(request.path):
