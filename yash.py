@@ -91,7 +91,9 @@ def auth_hook():
     #    return
 
     # role based authentication
-
+    if not config.is_login_required(request.path):
+        return
+    
     role = session_get_role()
     # super user can access anything
     if role == "super":
@@ -100,7 +102,7 @@ def auth_hook():
     valid_paths = config.get_dirs_by_role(role)
     for p in valid_paths:
         if request.path.startswith("/" + p + "/") or request.path == "/" + p:
-            if not (config.is_login_required(request.path) or role == "public") or is_logined():
+            if role == "public" or is_logined():
                 return
             else:
                 redirect("/login")
