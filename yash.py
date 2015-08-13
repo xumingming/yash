@@ -36,8 +36,6 @@ class Config:
     def __init__(self):
         config = simpleyaml.safe_load(open(YASH_DATA_HOME + "/config.yaml"))
         self.roles = config["roles"]
-        self.roles["public"] = ["public"]
-        
         self.users = config["users"]
 
     def authenticate(self, username, password):
@@ -58,7 +56,7 @@ class Config:
 
     def is_login_required(self, url):
         staticFilePattren = '^/static/'        
-        return (not url in ["/login", "/not-authorized", "/logout"]) and not re.search(staticFilePattren, url)
+        return (not url in ["/login", "/not-authorized", "/logout", "/"]) and not re.search(staticFilePattren, url)
     
 config = Config()
 
@@ -86,10 +84,6 @@ def is_logined():
 
 @hook('before_request')
 def auth_hook():
-    # everyone can access "/public"
-    #if request.path.startswith("/public") or request.path == "/":
-    #    return
-
     # role based authentication
     if not config.is_login_required(request.path):
         return
@@ -98,7 +92,7 @@ def auth_hook():
     # super user can access anything
     if role == "super":
         return
-        
+    
     valid_paths = config.get_dirs_by_role(role)
     for p in valid_paths:
         if request.path.startswith("/" + p + "/") or request.path == "/" + p:
@@ -155,7 +149,7 @@ def serve_qrcode():
 def static_files(filename):
     return static_file(filename, root=YASH_HOME + "/")
 
-@get('/<filename:re:.*\.(png|jpg|gif|ico)>')
+@get('/<filename:re:.*\.(png|jpg|gif|ico|html|js|css)>')
 def images(filename):
     return static_file(filename, root = os.getcwd())
 
@@ -366,7 +360,7 @@ def directories(filename):
     files = [x for x in files if not x.startswith(".")]
 
     role = session_get_role()
-    if fullurl == "/" and not role == "super":
+    if fullurl == "" and not role == "super":
         files = [x for x in files if config.has_right(role, x)]
         
     filemap = []
