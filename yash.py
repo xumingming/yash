@@ -382,9 +382,11 @@ def directories(filename):
         is_dir = os.path.isdir(physical_path + "/" + f)
         filemap.append(FileItem(name, newfullurl, is_dir))
         
-    breadcrumbs = calculate_breadcrumbs(fullurl)        
+    breadcrumbs = calculate_breadcrumbs(fullurl)
+    title = extract_file_title_by_fullurl(fullurl)
     return dict(files = filemap,
                 fullurl = fullurl,
+                title = title,
                 breadcrumbs = breadcrumbs,
                 request = request,
                 is_logined = is_logined())
