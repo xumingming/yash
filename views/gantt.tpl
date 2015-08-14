@@ -1,6 +1,5 @@
 <html>
   <head>
-    <title>gantt</title>
     % include('head')
     <link rel="stylesheet" href="/static/dist/styles/gantt.css">
   </head>
