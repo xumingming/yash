@@ -37,7 +37,9 @@ Gantt.prototype = {
         var $tables = this.container.find('tbody'),
             $blocks = this.container.find('.gantt div');
         if (!value) {
-            return $tables.find('tr').show();
+            $blocks.show();
+            $tables.find('tr').show();
+            return;
         }
         _.each($tables.eq(0).find('tr'), function(rowNode, i){
             var $tr = $(rowNode),
@@ -189,4 +191,15 @@ var $filterByMan = $('#filterByMan');
 $filterByMan.on('change', function(){
     var val = $filterByMan.val();
     gantt.filter('owner', val);
+
+    if (window.history.replaceState) {
+        window.history.replaceState(null, null, '?man=' + val);
+    }
 });
+
+// filter onload if owner is selected
+var search = window.location.search,
+    res = search.match(/\?man=(.+)/);
+if (res && res.length > 1) {
+    gantt.filter('owner', decodeURIComponent(res[1]));
+}
