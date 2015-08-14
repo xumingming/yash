@@ -74,7 +74,9 @@
                     </table>
                     <div class="gantt">
                         \<%_.each(tasks, function(task){%>
-                            <div></div>
+                            <div>
+                                <span></span>
+                            </div>
                         \<%});%>
                     </div>
                 </div>

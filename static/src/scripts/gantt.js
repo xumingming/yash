@@ -159,19 +159,19 @@ Gantt.prototype = {
         var $blocks = this.container.find('.gantt div');
         _.each($blocks, function(block, i){
             var pos = positions[i];
-            var bgcolor = 'blue'
-            var TASK_COLORS = ['#eee', '#d6e685', '#8cc665', '#44a340', '#1e6823']
-            var colorIdx = pos.progress / 20;
-            if (colorIdx * 20 == pos.progress) {
-                colorIdx -= 1;
-            }
-            bgcolor = TASK_COLORS[colorIdx]
+            // var bgcolor = 'blue'
+            // var TASK_COLORS = ['#eee', '#d6e685', '#8cc665', '#44a340', '#1e6823']
+            // var colorIdx = pos.progress / 20;
+            // if (colorIdx * 20 == pos.progress) {
+            //     colorIdx -= 1;
+            // }
+            // bgcolor = TASK_COLORS[colorIdx]
             
-            block.setAttribute('style', 'transform:translate(%left, 0); width:%wh; background-color:%bgcolor'
+            block.setAttribute('style', 'transform:translate(%left, 0); width:%wh; '
                                .replace('%left', pos.left + 'px')
                                .replace('%wh', pos.width + 'px')
-                               .replace('%bgcolor', bgcolor)
                               );
+            block.querySelector('span').style.width = pos.width * pos.progress / 100;
         });
     },
     _render: function(data){
