@@ -9,6 +9,9 @@
   text-overflow: ellipsis;
 }
 /* Main */
+.filter-container {
+  margin-bottom: 10px;
+}
 .gantt-container {
   /* common */
   /* container */

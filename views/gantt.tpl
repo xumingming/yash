@@ -7,15 +7,10 @@
   <body>
   % include('header')
   <div class="container">
-  </div>
-    <script>
-        var data = {{ !html }}
-    </script>
-    <script type="text/template" id="__TEMPLATE__gantt">
-      <form action="/">
+      <div class="filter-container">
         责任人:
         <select id="filterByMan">
-          <option value="All">All</option>
+          <option value="">All</option>
           %for man in project.mans:
               %if selected_man == man.encode("utf-8"):
                   <option selected>{{man}}</option>
@@ -24,26 +19,33 @@
               %end
           %end
         </select>
-      </form>
+      </div>
+      <div class="mygantt">
+      </div>
+  </div>
+    <script>
+        var data = {{ !html }}
+    </script>
+    <script type="text/template" id="__TEMPLATE__gantt">
         <div class="gantt-container">
             <div class="detail-table sub-container">
                 <div class="table-body">
                     <table>
                         <thead>
                             <tr>
-                                <th>任务名称</th>
-                                <th>责任人</th>
-                                <th>开始时间</th>
-                                <th>结束时间</th>
+                                <th class="name">任务名称</th>
+                                <th class="owner">责任人</th>
+                                <th class="start">开始时间</th>
+                                <th class="end">结束时间</th>
                             </tr>
                         </thead>
                         <tbody>
                             \<% _.each(tasks, function(task){%>
                                 <tr>
-                                    <td class="ellipsis" title="<%= task.taskName %>"><%= task.taskName %></td>
-                                    <td><%= task.owner %></td>
-                                    <td><%= task.start %></td>
-                                    <td><%= task.end %></td>
+                                    <td class="ellipsis name" title="<%= task.taskName %>"><%= task.taskName %></td>
+                                    <td class="owner"><%= task.owner %></td>
+                                    <td class="start"><%= task.start %></td>
+                                    <td class="end"><%= task.end %></td>
                                 </tr>
                             \<%});%>
                         </tbody>

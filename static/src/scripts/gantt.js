@@ -19,13 +19,45 @@ Gantt.prototype = {
             maxRange = this._getMaxRange(data),
             tasksPosition = this._getTasksPosition(data, maxRange[0]),
             dates = this._getDates(maxRange[0], maxRange[1]);
-            console.log(this.container.find('.gantt-area table'));
         this._render({
             tasks: data,
             dates: dates
         });
         console.log(data);
         this._renderTasks(tasksPosition);
+    },
+    filter: function(prop, value, filterType){
+        /**
+         * @description : filter rows by task property
+         * @param       : {String} prop, task property
+         * @param       : {String} value, task property value
+         * @param       : {String} filterType, filterType, includes 'match', 'equal'
+         */
+        filterType = filterType || 'equal';
+        var $tables = this.container.find('tbody'),
+            $blocks = this.container.find('.gantt div');
+        if (!value) {
+            return $tables.find('tr').show();
+        }
+        _.each($tables.eq(0).find('tr'), function(rowNode, i){
+            var $tr = $(rowNode),
+                $trs = $tr.add($tables.eq(1).find('tr').eq(i)).add($blocks.eq(i)),
+                propVal = $tr.find('.' + prop).text();
+            if (filterType === 'equal') {
+                if (propVal !== value) {
+                    $trs.hide();
+                } else {
+                    $trs.show();
+                }
+            } else {
+                if (new RegExp(value, 'i').test(propVal)) {
+                    $trs.show();
+                } else {
+                    $trs.hide();
+                }
+            }
+        });
+
     },
     _getDates: function(start, end){
         /**
@@ -146,8 +178,15 @@ Gantt.prototype = {
     }
 };
 
-new Gantt({
-    template: $('#__TEMPLATE__gantt').html(),
-    data: window.data,
-    container: $('.container')
+var gantt = new Gantt({
+        template: $('#__TEMPLATE__gantt').html(),
+        data: window.data,
+        container: $('.mygantt')
+    });
+
+// filter
+var $filterByMan = $('#filterByMan');
+$filterByMan.on('change', function(){
+    var val = $filterByMan.val();
+    gantt.filter('owner', val);
 });
