@@ -52,8 +52,15 @@
                 </div>
             </div>
             <div class="gantt-area sub-container">
-                <!-- draw background -->
                 <div class="table-body">
+                    <div class="gantt">
+                        \<%_.each(tasks, function(task){%>
+                            <div>
+                                <span></span>
+                            </div>
+                        \<%});%>
+                    </div>
+                    <!-- draw background -->
                     <table>
                         <thead>
                             <tr>
@@ -72,13 +79,6 @@
                             \<%});%>
                         </tbody>
                     </table>
-                    <div class="gantt">
-                        \<%_.each(tasks, function(task){%>
-                            <div>
-                                <span></span>
-                            </div>
-                        \<%});%>
-                    </div>
                 </div>
             </div>
         </div>
