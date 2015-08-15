@@ -245,9 +245,12 @@ def serve_plan(filename):
     fullurl = "/" + filename
     breadcrumbs = calculate_breadcrumbs(fullurl)
     title = extract_file_title_by_fullurl(fullurl)
+    man_stats = pretty_print_man_stats(project.tasks)
+    
     return dict(html = html,
                 title = title,
                 project = project,
+                man_stats = man_stats,
                 selected_man = man,
                 breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
 
@@ -296,14 +299,15 @@ def pretty_print_man_stats(tasks):
         man2days[task.man][0] = man2days[task.man][0] + finished_man_days
         man2days[task.man][1] = man2days[task.man][1] + man_days
 
-    ret = []
+    ret = {}
     for man in sorted(man2days):
         finished_man_days = man2days[man][0]        
         total_man_days = man2days[man][1]
         total_status = (finished_man_days / total_man_days) * 100
-        
-        ret.append(("{}: {:.0f}/{} {:.0f}%".format(man.encode("utf-8"), finished_man_days, total_man_days, total_status)))
 
+        ret[man] = [finished_man_days, total_man_days, total_status]
+        # ret.append(("{}: {:.0f}/{} {:.0f}%".format(man.encode("utf-8"), finished_man_days, total_man_days, total_status)))
+        
     return ret
 
         
