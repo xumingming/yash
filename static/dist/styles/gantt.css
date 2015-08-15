@@ -9,6 +9,9 @@
   text-overflow: ellipsis;
 }
 /* Main */
+.filter-container {
+  margin-bottom: 10px;
+}
 .gantt-container {
   /* common */
   /* container */
@@ -84,6 +87,9 @@
 .gantt-container .gantt-area .table-body {
   position: relative;
 }
+.gantt-container .gantt-area table {
+  position: relative;
+}
 .gantt-container .weekend {
   background-color: #efefef;
 }
@@ -96,6 +102,11 @@
 }
 .gantt-container .gantt div {
   height: 20px;
-  background: #ccc;
+  background: #449aec;
+}
+.gantt-container .gantt div span {
+  display: block;
+  height: 20px;
+  background: #a1ccf5;
 }
 /*# sourceMappingURL=gantt.css.map */

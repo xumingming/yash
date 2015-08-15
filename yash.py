@@ -231,15 +231,15 @@ def serve_plan(filename):
     # make project info to json
     texts = []
     for idx, task in enumerate(project.tasks):
-        if not man or man == task.man.encode("utf-8"):
-            taskjson = {}
-            taskjson["taskName"] = task.name.encode("utf-8")
-            taskjson["owner"] = task.man.encode("utf-8")
-            taskjson["cost"] = task.man_day
-            taskjson["start"] = str(project.task_start_date(task))
-            taskjson["end"] = str(project.task_end_date(task))
-            taskjson["progress"] = str(task.status)
-            texts.append(taskjson)
+        # if not man or man == task.man.encode("utf-8"):
+        taskjson = {}
+        taskjson["taskName"] = task.name.encode("utf-8")
+        taskjson["owner"] = task.man.encode("utf-8")
+        taskjson["cost"] = task.man_day
+        taskjson["start"] = str(project.task_start_date(task))
+        taskjson["end"] = str(project.task_end_date(task))
+        taskjson["progress"] = str(task.status)
+        texts.append(taskjson)
 
     html = json.dumps(texts)
     fullurl = "/" + filename

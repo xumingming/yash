@@ -15,6 +15,10 @@
 
 /* Main */
 
+.filter-container {
+    margin-bottom: 10px;
+}
+
 .gantt-container {
     /* common */
 
@@ -109,6 +113,10 @@
         .table-body {
             position: relative;
         }
+
+        table {
+            position: relative;
+        }
     }
 
     .weekend {
@@ -124,7 +132,13 @@
 
         div {
             height: @task-height;
-            background: #ccc;
+            background:darken(#cfe5fa, 30);
+
+            span {
+                display: block;
+                height: @task-height;
+                background: darken(#cfe5fa, 10);
+            }
         }
     }
 }
