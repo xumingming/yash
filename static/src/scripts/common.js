@@ -14,7 +14,20 @@ $(function(){
         e = e || window.event;
 
         console.log("keycode: " + e.keyCode);
-        if (e.keyCode == '74') { // 'j' to go to parent folder
+
+        if (e.keyCode == '72') { // 'h' to go to home page
+            var newhref = window.location.href
+            var idx = newhref.indexOf("/")
+            idx = newhref.indexOf("/", idx + 1)
+            idx = newhref.indexOf("/", idx + 1)
+            
+            if (idx >= 0) {
+                newhref = newhref.substr(0, idx);
+                window.location = newhref;
+            }
+        }
+        
+        if (e.keyCode == '85') { // 'u' to go to parent folder
             var newhref = window.location.href
             var idx = newhref.lastIndexOf("/")
             if (idx >= 0) {
@@ -33,11 +46,28 @@ $(function(){
         if (e.keyCode == '65') { // 'a' to focus the first item in listing page
             var items = $(".list-group")
             if (items) {
-                console.log('hello')
                 var firstItem = items.children()[0];
                 firstItem = $(firstItem)
                 var firstLink = firstItem.find("a").focus()                
                 firstLink.focus();
+            }
+        }
+
+        if (e.keyCode == '74') { // 'j' to go up one item in listing page
+            var ae = document.activeElement;
+            if (ae && ae.tagName == "A" && $(ae).parent()[0].tagName == "LI") {
+                ae = $(ae);
+                var nextAe = ae.parent().prev().find("a");
+                nextAe.focus();
+            }
+        }
+        
+        if (e.keyCode == '75') { // 'k' to go up one item in listing page
+            var ae = document.activeElement;
+            if (ae && ae.tagName == "A" && $(ae).parent()[0].tagName == "LI") {
+                ae = $(ae);
+                var nextAe = ae.parent().next().find("a");
+                nextAe.focus();
             }
         }
     }
