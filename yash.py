@@ -254,38 +254,6 @@ def serve_plan(filename):
                 selected_man = man,
                 breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
 
-@get('/<filename:re:.*\.schedule\.(md|markdown)>')
-@view('markdown')
-def serve_plan1(filename):
-    fullpath   = os.getcwd() + "/" + filename
-
-    text = read_file_from_disk(fullpath)
-    project = parser.parse(text)
-
-    man = request.GET.get('man')
-    
-    texts = []
-    texts.append("{} | {} | {} | {} | {} | {}".format('任务', '责任人', '所需人日', '开始时间', '结束时间', '进度'))
-    texts.append("{} | {} | {} | {} | {} | {}".format('--', '--', '--', '--', '--', '--'))
-    for task in project.tasks:
-        if not man or man == task.man.encode("utf-8"):
-            texts.append("{} | {} | {} | {} | {} | {}".format(
-                task.name.encode("utf-8"),
-                task.man.encode("utf-8"),
-                task.man_day,
-                project.task_start_date(task), 
-                project.task_end_date(task),
-                str(task.status) + "%",
-                100)
-            )
-
-    texts.append("> 总人日: {}\n".format(project.total_man_days))
-
-    man_stats = pretty_print_man_stats(project.tasks)
-    texts.append("> 人员详情: {}\n".format("\n".join(man_stats)))
-
-    return markdown_files_1("\n".join(texts), "/" + filename)
-
 def pretty_print_man_stats(tasks):
     man2days = {}
     for task in tasks:
@@ -306,7 +274,6 @@ def pretty_print_man_stats(tasks):
         total_status = (finished_man_days / total_man_days) * 100
 
         ret[man] = [finished_man_days, total_man_days, total_status]
-        # ret.append(("{}: {:.0f}/{} {:.0f}%".format(man.encode("utf-8"), finished_man_days, total_man_days, total_status)))
         
     return ret
 
