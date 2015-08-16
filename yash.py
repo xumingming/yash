@@ -319,11 +319,23 @@ def xml_files(filename):
     return text
 
 @route('/<filename:re:.*\.sql>')
+@view("code")
 def sql_files(filename):
     fullpath   = os.getcwd() + "/" + filename
     text = read_file_from_disk(fullpath)
-    response.content_type = "text/plain"
-    return text
+    mode = "text"
+    if filename.endswith(".sql"):
+        mode = "sql"
+    response.content_type = "text/html"
+    breadcrumbs = calculate_breadcrumbs("/" + filename)
+    title = extract_file_title_by_fullurl("/" + filename)
+    return dict(mode = mode,
+                code = text,
+                request = request,
+                title = title,
+                breadcrumbs = breadcrumbs,
+                is_logined = is_logined()
+    )
 
 @route('/<filename:re:.*\.(md|markdown)>')
 @view('markdown')
