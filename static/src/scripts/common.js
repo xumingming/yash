@@ -29,5 +29,16 @@ $(function(){
             searchBox.focus();
             e.preventDefault();
         }
+
+        if (e.keyCode == '65') { // 'a' to focus the first item in listing page
+            var items = $(".list-group")
+            if (items) {
+                console.log('hello')
+                var firstItem = items.children()[0];
+                firstItem = $(firstItem)
+                var firstLink = firstItem.find("a").focus()                
+                firstLink.focus();
+            }
+        }
     }
 });
