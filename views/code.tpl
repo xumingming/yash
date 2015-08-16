@@ -8,7 +8,7 @@
   </head>
   <body>
     % include('header')        
-    <textarea id="code" rows="20" style="height:80%">
+    <textarea id="code" rows="20" style="height:80%;display:none">
       {{code}}
     </textarea>
     <script>
