@@ -172,7 +172,7 @@ Gantt.prototype = {
                                .replace('%left', pos.left + 'px')
                                .replace('%wh', pos.width + 'px')
                               );
-            block.querySelector('span').style.width = pos.width * pos.progress / 100;
+            block.querySelector('span').style.width = Math.max(pos.width * pos.progress / 100 - 6, 0);
         });
     },
     _render: function(data){

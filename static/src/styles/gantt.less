@@ -132,12 +132,15 @@
 
         div {
             height: @task-height;
-            background:darken(#cfe5fa, 30);
+            background:darken(#cfe5fa, 0);
+            padding: 2px 2px;
+            border: 1px solid darken(#cfe5fa, 10);
 
             span {
                 display: block;
-                height: @task-height;
-                background: darken(#cfe5fa, 10);
+                height: @task-height - 6;
+                background: darken(#cfe5fa, 20);
+                border: 1px solid darken(#cfe5fa, 30);
             }
         }
     }

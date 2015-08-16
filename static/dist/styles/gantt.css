@@ -102,11 +102,14 @@
 }
 .gantt-container .gantt div {
   height: 20px;
-  background: #449aec;
+  background: #cfe5fa;
+  padding: 2px 2px;
+  border: 1px solid #a1ccf5;
 }
 .gantt-container .gantt div span {
   display: block;
-  height: 20px;
-  background: #a1ccf5;
+  height: 14px;
+  background: #73b3f0;
+  border: 1px solid #449aec;
 }
 /*# sourceMappingURL=gantt.css.map */
