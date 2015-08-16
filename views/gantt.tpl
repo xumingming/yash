@@ -82,6 +82,23 @@
                 </div>
             </div>
         </div>
+        <div>
+          <table>
+            <tr>
+              <td>责任人</td>
+              <td>已完成人日</td>
+              <td>总人日</td>
+              <td>总进度</td>
+            </tr>
+            %for man, stats in man_stats.iteritems():
+            <tr>
+              <td>{{man}}</td>
+              <td>{{stats[0]}}</td>
+              <td>{{stats[1]}}</td>
+              <td>{{stats[2]}}</td>                                          
+            </tr>
+            %end
+        </div>
     </script>
     % include('footer')
     <script src="/static/lib/underscore/1.8.3/underscore-min.js"></script>
