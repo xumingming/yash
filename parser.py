@@ -34,6 +34,9 @@ class Project:
     def task_end_date(self, task):
         return add_days(task.man, self.project_start_date, self.vacations, task.start_point + task.man_day, False)
 
+    def is_delayed(self, task):
+        return task.status < 100 and self.task_end_date(task) < datetime.datetime.now().date()
+    
     def init_status(self):
         total_man_days = 0
         cost_man_days = 0

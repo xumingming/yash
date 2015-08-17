@@ -114,16 +114,14 @@
 }
 .progressbar-container {
   background-color: #a1ccf5;
+  padding: 2px 2px;
   width: 100px;
   height: 20px;
 }
 .progressbar {
   background-color: #449aec;
   height: 16px;
-  position: relative;
-  top: 2px;
-  font-size: 12px;
-  align: center;
+  font-size: 10px;
   float: left;
 }
 /*# sourceMappingURL=gantt.css.map */

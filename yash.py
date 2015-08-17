@@ -238,6 +238,7 @@ def serve_plan(filename):
         taskjson["cost"] = task.man_day
         taskjson["start"] = str(project.task_start_date(task))
         taskjson["end"] = str(project.task_end_date(task))
+        taskjson["isDelayed"] = str(project.is_delayed(task))
         taskjson["progress"] = str(task.status)
         texts.append(taskjson)
 
