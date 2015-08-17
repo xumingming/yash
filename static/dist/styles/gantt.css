@@ -112,4 +112,18 @@
   background: #73b3f0;
   border: 1px solid #449aec;
 }
+.progressbar-container {
+  background-color: #a1ccf5;
+  width: 100px;
+  height: 20px;
+}
+.progressbar {
+  background-color: #449aec;
+  height: 16px;
+  position: relative;
+  top: 2px;
+  font-size: 12px;
+  align: center;
+  float: left;
+}
 /*# sourceMappingURL=gantt.css.map */

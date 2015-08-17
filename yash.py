@@ -267,15 +267,7 @@ def pretty_print_man_stats(tasks):
         man2days[task.man][0] = man2days[task.man][0] + finished_man_days
         man2days[task.man][1] = man2days[task.man][1] + man_days
 
-    ret = {}
-    for man in sorted(man2days):
-        finished_man_days = man2days[man][0]        
-        total_man_days = man2days[man][1]
-        total_status = (finished_man_days / total_man_days) * 100
-
-        ret[man] = [finished_man_days, total_man_days, total_status]
-        
-    return ret
+    return man2days
 
         
 @route('/<filename:re:.*\.xml>')

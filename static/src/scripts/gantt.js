@@ -203,3 +203,16 @@ var search = window.location.search,
 if (res && res.length > 1) {
     gantt.filter('owner', decodeURIComponent(res[1]));
 }
+
+$('#tabs a').click(function (e) {
+  e.preventDefault()
+  $(this).tab('show')
+})
+
+$(".progressbar-container").each(function(idx, item) {
+    item = $(item);
+    var progress = item.attr("data-progress");
+    var width = progress + "px";
+    item.find(".progressbar").width(progress + "px");
+    item.append("<span>" + progress + "%</span>");
+})
