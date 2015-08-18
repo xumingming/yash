@@ -23,15 +23,15 @@
       <div id="tabs">
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">计划</a></li>
-          <li role="presentation" class="active"><a href="#summary" aria-controls="profile" role="tab" data-toggle="tab">统计信息</a></li>
+          <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">计划</a></li>
+          <li role="presentation"><a href="#summary" aria-controls="profile" role="tab" data-toggle="tab">统计信息</a></li>
         </ul>
 
         <!-- Tab panes -->
         <div class="tab-content">
-          <div class="mygantt tab-pane" id="home" role="tabpanel">
+          <div class="mygantt tab-pane active" id="home" role="tabpanel">
           </div>
-          <div role="tabpanel" class="tab-pane active" id="summary">
+          <div role="tabpanel" class="tab-pane" id="summary">
             <div>
               <table data-toggle="table">
                 <tr>

@@ -117,11 +117,12 @@
   padding: 2px 2px;
   width: 100px;
   height: 20px;
+  text-align: center;
 }
 .progressbar {
   background-color: #449aec;
   height: 16px;
   font-size: 10px;
-  float: left;
+  position: absolute;
 }
 /*# sourceMappingURL=gantt.css.map */

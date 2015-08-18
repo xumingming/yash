@@ -213,8 +213,7 @@ $(".progressbar-container").each(function(idx, item) {
     var progress = item.attr("data-progress");
     var width = progress + "px";
     item.find(".progressbar").width(progress + "px");
-    item.append("<span>" + progress + "%</span>");
-    //item.append(progress + "%");    
+    item.append("<span style='position:relative;top:-2px'>" + progress + "%</span>");
 })
 
 },{"./utils":2}],2:[function(require,module,exports){
