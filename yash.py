@@ -218,7 +218,11 @@ def extract_file_title_by_fullurl(fullurl):
         if extension in SUPPORTED_PLAIN_FILE_TYPES:
             name = extract_file_title(physical_path)
 
-    return name
+    name = name.strip()
+    if len(name) > 0:
+        return name
+    else:
+        return os.path.basename(fullurl)
     
 @get('/<filename:re:.*\.plan\.(md|markdown)>')
 @view('gantt')
