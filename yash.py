@@ -301,6 +301,14 @@ def sql_files(filename):
                 is_logined = is_logined()
     )
 
+@route('/<filename:re:.*\.(txt|properties)>')
+def plain_files(filename):
+    fullpath   = os.getcwd() + "/" + filename
+    text = read_file_from_disk(fullpath)
+
+    response.content_type = "text/plain"
+    return text
+
 @route('/<filename:re:.*\.(md|markdown)>')
 @view('markdown')
 def markdown_files(filename):
