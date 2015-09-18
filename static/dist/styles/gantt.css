@@ -12,8 +12,16 @@
 .filter-container {
   margin-bottom: 10px;
 }
+.tab-content {
+  padding: 10px 0;
+}
 .gantt-container {
   /* common */
+  /*
+    tr.active {
+        background-color: rgba(239, 239, 239, 0.8);
+    }
+    */
   /* container */
   /* left table */
   /* right gantt */
@@ -112,17 +120,11 @@
   background: #73b3f0;
   border: 1px solid #449aec;
 }
-.progressbar-container {
-  background-color: #a1ccf5;
-  padding: 2px 2px;
-  width: 100px;
-  height: 20px;
-  text-align: center;
+.progress-container td {
+  padding: 5px;
 }
-.progressbar {
-  background-color: #449aec;
-  height: 16px;
-  font-size: 10px;
-  position: absolute;
+.progress-container .progress {
+  margin: 0;
+  width: 300px;
 }
 /*# sourceMappingURL=gantt.css.map */
