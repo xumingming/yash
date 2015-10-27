@@ -6,7 +6,7 @@
   </head>
   <body>
   % include('header')
-  <div class="container">
+  <div class="container" style="width:99%">
       <article class="markdown-body">
         {{ !html }}
       </article>

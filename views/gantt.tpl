@@ -65,7 +65,10 @@
                 </tr>
                 %end
                 <%
-                   total_progress = finished_man_days * 100 / total_man_days
+                   total_prgress = 0
+                   if total_man_days > 0:
+                       total_progress = finished_man_days * 100 / total_man_days
+
                    total_progress = "%.2f" % (total_progress)
                 %>
                 <tr>
