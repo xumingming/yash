@@ -19,6 +19,10 @@
     margin-bottom: 10px;
 }
 
+.tab-content {
+    padding: 10px 0;
+}
+
 .gantt-container {
     /* common */
 
@@ -43,6 +47,12 @@
         padding: 0 2px;
         border-top: 0;
     }
+
+    /*
+    tr.active {
+        background-color: rgba(239, 239, 239, 0.8);
+    }
+    */
 
 
     /* container */
@@ -147,17 +157,13 @@
 }
 
 
-.progressbar-container {
-    background-color:rgb(161, 204, 245);
-    padding: 2px 2px;
-    width:100px;
-    height:20px;
-    text-align: center;
-}
+.progress-container {
+    td {
+        padding: 5px;
+    }
 
-.progressbar {
-    background-color:rgb(68, 154, 236);
-    height:16px;
-    font-size:10px;
-    position: absolute;
+    .progress {
+        margin: 0;
+        width: 300px;
+    }
 }

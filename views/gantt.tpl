@@ -31,9 +31,9 @@
         <div class="tab-content">
           <div class="mygantt tab-pane active" id="home" role="tabpanel">
           </div>
+          <!-- Progress Container start -->
           <div role="tabpanel" class="tab-pane" id="summary">
-            <div>
-              <table data-toggle="table">
+              <table data-toggle="table" class="progress-container">
                 <tr>
                   <td>责任人</td>
                   <td>已完成人日</td>
@@ -41,7 +41,7 @@
                   <td>总进度</td>
                 </tr>
                 <%
-                    finished_man_days = 0                
+                    finished_man_days = 0
                     total_man_days = 0
                 %>
                 %for man, stats in man_stats.iteritems():
@@ -50,16 +50,17 @@
                    total_man_days += stats[1]
 
                    current_man_progress = stats[0] * 100 / stats[1]
-                   current_man_progress = "%.2f" % (current_man_progress)
+                   current_man_progress = "%.0f" % (current_man_progress)
                 %>
                 <tr>
                   <td>{{man}}</td>
                   <td>{{stats[0]}}</td>
                   <td>{{stats[1]}}</td>
                   <td>
-                    <div class="progressbar-container" data-progress="{{current_man_progress}}">
-                      <div class="progressbar">
-                      </div>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="{{current_man_progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{current_man_progress}}%">
+                            {{current_man_progress}}%
+                        </div>
                     </div>
                   </td>
                 </tr>
@@ -69,22 +70,28 @@
                    if total_man_days > 0:
                        total_progress = finished_man_days * 100 / total_man_days
 
-                   total_progress = "%.2f" % (total_progress)
+                   total_progress = finished_man_days * 100 / total_man_days
+                   total_progress = "%.0f" % (total_progress)
                 %>
                 <tr>
                   <td>总计</td>
                   <td>{{finished_man_days}}</td>
                   <td>{{total_man_days}}</td>
                   <td>
-                    <div class="progressbar-container" data-progress="{{total_progress}}">
-                      <div class="progressbar">
-                      </div>
+                    <!-- <div class="progressbar&#45;container" data&#45;progress="{{total_progress}}"> -->
+                    <!--   <div class="progressbar"> -->
+                    <!--   </div> -->
+                    <!-- </div> -->
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-success progress-bar-striped" role="progressbar" aria-valuenow="{{total_progress}}" aria-valuemin="0" aria-valuemax="100" style="width: {{total_progress}}%">
+                            {{total_progress}}%
+                        </div>
                     </div>
                   </td>
                 </tr>
-            </div>
+            </table>
           </div>
-        </div>
+          <!-- Progress Container end -->
       </div>
 
   </div>
@@ -148,6 +155,9 @@
                 </div>
             </div>
         </div>
+    </script>
+    <!-- progress -->
+    <script type="text/template" id="__TEMPLATE__progress">
     </script>
     % include('footer')
     <script src="/static/lib/underscore/1.8.3/underscore-min.js"></script>

@@ -21,11 +21,8 @@ $(function(){
         return false;
     }
     
-    document.onkeydown = checkKey;
     function checkKey(e) {
         e = e || window.event;
-
-        console.log("keycode: " + e.keyCode);
 
         if (e.keyCode == '72' && !isInSearchBox()) { // 'h' to go to home page
             var newhref = window.location.href
@@ -83,4 +80,6 @@ $(function(){
             }
         }
     }
+
+    document.onkeydown = checkKey;
 });

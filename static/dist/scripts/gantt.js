@@ -26,6 +26,7 @@ Gantt.prototype = {
         });
         console.log(data);
         this._renderTasks(tasksPosition);
+        this._bindEvent();
     },
     filter: function(prop, value, filterType){
         /**
@@ -105,7 +106,7 @@ Gantt.prototype = {
 
         var self = this,
             owners = {};
-        return _.map(tasks, function(task, i){
+        return _.map(tasks, function(task){
             // conside about half day
             var extra = 0;
             if (!owners[task.owner]) {
@@ -166,16 +167,32 @@ Gantt.prototype = {
                                .replace('%wh', pos.width + 'px')
                               );
             // render task as red if it is delayed
-            if (pos.isDelayed == "True") {
+            if (pos.isDelayed === "True") {
                 $(block).css("background-color", "#e66");
             }
-            
+
             block.querySelector('span').style.width = Math.max(pos.width * pos.progress / 100 - 6, 0);
         });
     },
     _render: function(data){
         this.container.html(_.template(this.template)(data));
         this.container.find('.gantt-area table').width(data.dates.length * DATE_WIDTH);
+    },
+    _bindEvent: function(){
+        var $tables = this.container.find('tbody');
+
+        $tables.on('click', 'tr', function(){
+            var $tr = $(this),
+                i = $tr.index(),
+                isActive = $tr.hasClass('active'),
+                $trs = $tables.eq(0).find('tr:eq(' + i + ')').add($tables.eq(1).find('tr:eq(' + i + ')'));
+            $tables.find('tr').removeClass('active');
+            if (isActive) {
+                $trs.removeClass('active');
+            } else {
+                $trs.addClass('active');
+            }
+        });
     }
 };
 
@@ -204,17 +221,16 @@ if (res && res.length > 1) {
 }
 
 $('#tabs a').click(function (e) {
-  e.preventDefault()
-  $(this).tab('show')
-})
+  e.preventDefault();
+  $(this).tab('show');
+});
 
-$(".progressbar-container").each(function(idx, item) {
-    item = $(item);
-    var progress = item.attr("data-progress");
-    var width = progress + "px";
-    item.find(".progressbar").width(progress + "px");
-    item.append("<span style='position:relative;top:-2px'>" + progress + "%</span>");
-})
+// $(".progressbar-container").each(function(idx, item) {
+//     item = $(item);
+//     var progress = item.attr("data-progress");
+//     item.find(".progressbar").width(progress + "px");
+//     item.append("<span style='position:relative;top:-2px'>" + progress + "%</span>");
+// });
 
 },{"./utils":2}],2:[function(require,module,exports){
 /*
