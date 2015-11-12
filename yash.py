@@ -17,7 +17,7 @@ import json
 YASH_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 YASH_DATA_HOME = os.path.expanduser("~/.yash")
-SUPPORTED_PLAIN_FILE_TYPES = ["markdown", "md", "txt", "plan"]
+SUPPORTED_PLAIN_FILE_TYPES = ["markdown", "md", "txt", "plan", "py"]
 
 session_opts = {
     'session.type': 'file',
@@ -301,7 +301,7 @@ def sql_files(filename):
                 is_logined = is_logined()
     )
 
-@route('/<filename:re:.*\.(txt|properties)>')
+@route('/<filename:re:.*\.(txt|properties|py)>')
 def plain_files(filename):
     fullpath   = os.getcwd() + "/" + filename
     text = read_file_from_disk(fullpath)
