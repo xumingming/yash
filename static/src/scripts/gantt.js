@@ -170,7 +170,12 @@ Gantt.prototype = {
                 $(block).css("background-color", "#e66");
             }
 
-            block.querySelector('span').style.width = Math.max(pos.width * pos.progress / 100 - 6, 0);
+            var width = Math.max(pos.width * pos.progress / 100 - 6, 0);
+            if (width > 0) {
+                block.querySelector('span').style.width = width;
+            } else {
+                block.querySelector('span').style.display = 'none';
+            }
         });
     },
     _render: function(data){
