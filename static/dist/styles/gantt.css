@@ -64,11 +64,6 @@
 .gantt-container .detail-table td:first-child,
 .gantt-container .detail-table th:first-child {
   border-left: 0;
-  width: 190px;
-}
-.gantt-container .detail-table td:nth-child(2),
-.gantt-container .detail-table th:nth-child(2) {
-  width: 50px;
 }
 .gantt-container .detail-table td:last-child,
 .gantt-container .detail-table th:last-child {
