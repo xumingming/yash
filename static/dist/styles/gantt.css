@@ -46,7 +46,7 @@
 }
 .gantt-container .detail-table {
   float: left;
-  max-width: 25%;
+  max-width: 35%;
   border: 1px solid #ccc;
   overflow: auto;
 }
@@ -76,7 +76,7 @@
 }
 .gantt-container .gantt-area {
   float: left;
-  max-width: 75%;
+  max-width: 65%;
   border: 1px solid #ccc;
   overflow: auto;
   border-left: 0;

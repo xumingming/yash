@@ -23,7 +23,6 @@ Gantt.prototype = {
             tasks: data,
             dates: dates
         });
-        console.log(data);
         this._renderTasks(tasksPosition);
         this._bindEvent();
     },
