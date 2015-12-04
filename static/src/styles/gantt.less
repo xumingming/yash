@@ -33,12 +33,10 @@
     table {
         font-size: 12px;
         border-collapse: collapse;
-        table-layout: fixed;
     }
 
     td,
     th {
-        width: @date-width;
         height: @task-height;
         .border;
     }
@@ -64,19 +62,14 @@
         .border;
         overflow: auto;
 
-        table {
-            width: 400px;
-        }
-
         td,
         th {
             padding: 0 2px;
+            white-space: nowrap;
         }
 
         td,
         th{
-            width: 80px;
-
             &:first-child {
                 border-left: 0;
             }

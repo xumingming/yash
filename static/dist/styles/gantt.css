@@ -32,11 +32,9 @@
 .gantt-container table {
   font-size: 12px;
   border-collapse: collapse;
-  table-layout: fixed;
 }
 .gantt-container td,
 .gantt-container th {
-  width: 50px;
   height: 20px;
   border: 1px solid #ccc;
 }
@@ -50,16 +48,10 @@
   border: 1px solid #ccc;
   overflow: auto;
 }
-.gantt-container .detail-table table {
-  width: 400px;
-}
 .gantt-container .detail-table td,
 .gantt-container .detail-table th {
   padding: 0 2px;
-}
-.gantt-container .detail-table td,
-.gantt-container .detail-table th {
-  width: 80px;
+  white-space: nowrap;
 }
 .gantt-container .detail-table td:first-child,
 .gantt-container .detail-table th:first-child {
