@@ -8,7 +8,6 @@ from bottle import route, run, template, static_file, get, post, view, request, 
 import beaker.middleware
 from search import Search, SearchResult
 import simpleyaml
-import qrcode
 import StringIO
 import parser
 import getopt
@@ -132,18 +131,6 @@ def login_post():
 def logout():
     session_set("user", None)
     redirect("/")
-
-@get('/system/qr.png')
-def serve_qrcode():
-    filename = request.GET.get("path")
-    actual_path = filename
-    qrcode_img = qrcode.make(actual_path)
-
-    response.content_type = 'image/png'
-    buf = StringIO.StringIO()
-    qrcode_img.save(buf, "PNG")
-    contents = buf.getvalue()
-    return contents
 
 @get('/<filename:re:static\/.*\.(css|js|png|jpg|gif|ico|woff|woff2|ttf|map)>')
 def static_files(filename):

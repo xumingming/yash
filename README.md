@@ -6,7 +6,7 @@ This little script works very similar with `python -m SimpleHTTPServer`, but it 
 
 ## Install
 
-    sudo pip install markdown2 bottle beaker simpleyaml qrcode pillow
+    sudo pip install markdown2 bottle beaker simpleyaml pillow
 	git clone git@github.com:xumingming/yash.git
 	cd yash
 	chmod a+x yash.py
