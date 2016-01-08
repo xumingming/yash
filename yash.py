@@ -46,12 +46,18 @@ class Config:
             return "public"
         else:
             return user["role"]
+        
+    def has_right(self, role, path):
+        """Whether the specified `role` has the right to
+           access the specified path?
+        """
+        
+        for p in self.roles[role]:
+            print "re: %s, path: %s" % (p, path)
+            if re.compile(p).match(path):
+                return True
 
-    def get_dirs_by_role(self, role):
-        return self.roles[role]
-
-    def has_right(self, role, folder):
-        return folder in self.roles[role]
+        return False
 
     def is_login_required(self, url):
         staticFilePattren = '^/static/'        
@@ -89,16 +95,14 @@ def auth_hook():
     
     role = session_get_role()
     # super user can access anything
-    if role == "super":
+    if role == "root":
         return
-    
-    valid_paths = config.get_dirs_by_role(role)
-    for p in valid_paths:
-        if request.path.startswith("/" + p + "/") or request.path == "/" + p:
-            if role == "public" or is_logined():
-                return
-            else:
-                redirect("/login")
+
+    if config.has_right(role, request.path):
+        if role == "public" or is_logined():
+            return
+        else:
+            redirect("/login")
                     
     redirect("/not-authorized")
         
@@ -347,8 +351,8 @@ def directories(filename):
     files = [x for x in files if not x.startswith(".")]
 
     role = session_get_role()
-    if fullurl == "" and not role == "super":
-        files = [x for x in files if config.has_right(role, x)]
+    if fullurl == "" and not role == "root":
+        files = [x for x in files if config.has_right(role, fullurl + "/" + x)]
         
     filemap = []
     for f in files:

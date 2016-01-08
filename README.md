@@ -16,14 +16,13 @@ edit `~/.yash/config.yaml` and fill it with the following:
 
 ```yaml
 roles:
-  home:
-    - home
-    - public
+    public:
+      - /*
 
 users:
     yash:
       password: yash
-      role: super
+      role: root
     demo:
       password: demo
       role: public
