@@ -53,7 +53,6 @@ class Config:
         """
         
         for p in self.roles[role]:
-            print "re: %s, path: %s" % (p, path)
             if re.compile(p).match(path):
                 return True
 
