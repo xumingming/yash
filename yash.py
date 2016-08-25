@@ -241,12 +241,21 @@ def serve_plan(filename):
     breadcrumbs = calculate_breadcrumbs(fullurl)
     title = extract_file_title_by_fullurl(fullurl)
     man_stats = pretty_print_man_stats(project.tasks)
+
+    # render the raw text
+    fullpath   = os.getcwd() + "/" + filename
+    raw_text = read_file_from_disk(fullpath)
+    raw_text = markdown.markdown(
+        raw_text,
+        extras        = ["tables", "code-friendly", "fenced-code-blocks"]
+    )
     
     return dict(html = html,
                 title = title,
                 project = project,
                 man_stats = man_stats,
                 selected_man = man,
+                raw_text = raw_text,
                 breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
 
 def pretty_print_man_stats(tasks):

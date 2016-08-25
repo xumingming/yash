@@ -23,13 +23,17 @@
       <div id="tabs">
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">计划</a></li>
+          <li role="presentation" class="active"><a href="#text" aria-controls="text" role="tab" data-toggle="tab">Text</a></li> 
+          <li role="presentation"><a href="#gantt" aria-controls="gantt" role="tab" data-toggle="tab">Gantt</a></li>
           <li role="presentation"><a href="#summary" aria-controls="profile" role="tab" data-toggle="tab">统计信息</a></li>
         </ul>
 
         <!-- Tab panes -->
         <div class="tab-content">
-          <div class="mygantt tab-pane active" id="home" role="tabpanel">
+          <div class="tab-pane active" id="text" role="tabpanel">
+            {{!raw_text}}
+          </div>                    
+          <div class="mygantt tab-pane" id="gantt" role="tabpanel">
           </div>
           <!-- Progress Container start -->
           <div role="tabpanel" class="tab-pane" id="summary">
