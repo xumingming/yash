@@ -44,7 +44,7 @@
 }
 .gantt-container .detail-table {
   float: left;
-  max-width: 35%;
+  max-width: 60%;
   border: 1px solid #ccc;
   overflow: auto;
 }
