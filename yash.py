@@ -232,7 +232,6 @@ def serve_plan(filename):
         taskjson = {}
         taskjson["taskName"] = render_markdown(task.name.encode("utf-8"))
         taskjson["cleanedTaskName"] = task.name.encode("utf-8")
-        print taskjson["taskName"]
         taskjson["owner"] = task.man.encode("utf-8")
         taskjson["cost"] = task.man_day
         taskjson["start"] = str(project.task_start_date(task))
