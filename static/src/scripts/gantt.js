@@ -223,14 +223,7 @@ if (res && res.length > 1) {
     gantt.filter('owner', decodeURIComponent(res[1]));
 }
 
-$('#tabs a').click(function (e) {
+$('#tabs .nav-tabs a').click(function (e) {
   e.preventDefault();
   $(this).tab('show');
 });
-
-// $(".progressbar-container").each(function(idx, item) {
-//     item = $(item);
-//     var progress = item.attr("data-progress");
-//     item.find(".progressbar").width(progress + "px");
-//     item.append("<span style='position:relative;top:-2px'>" + progress + "%</span>");
-// });

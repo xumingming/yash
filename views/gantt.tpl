@@ -23,7 +23,7 @@
       <div id="tabs">
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a href="#text" aria-controls="text" role="tab" data-toggle="tab">Text</a></li> 
+          <li role="presentation" class="active"><a href="#text" aria-controls="text" role="tab" data-toggle="tab">Text</a></li>
           <li role="presentation"><a href="#gantt" aria-controls="gantt" role="tab" data-toggle="tab">Gantt</a></li>
           <li role="presentation"><a href="#summary" aria-controls="profile" role="tab" data-toggle="tab">统计信息</a></li>
         </ul>
@@ -32,7 +32,7 @@
         <div class="tab-content">
           <div class="tab-pane active" id="text" role="tabpanel">
             {{!raw_text}}
-          </div>                    
+          </div>
           <div class="mygantt tab-pane" id="gantt" role="tabpanel">
           </div>
           <!-- Progress Container start -->
@@ -102,7 +102,7 @@
     <script>
         var data = {{ !html }}
     </script>
-    <script type="text/template" id="__TEMPLATE__gantt">      
+    <script type="text/template" id="__TEMPLATE__gantt">
         <div class="gantt-container">
             <div class="detail-table sub-container">
                 <div class="table-body">
@@ -118,7 +118,7 @@
                         <tbody>
                             \<% _.each(tasks, function(task){%>
                                 <tr>
-                                    <td class="ellipsis name" title="<%= task.taskName %>"><%= task.taskName %></td>
+                                    <td class="ellipsis name" title="<%= task.cleanedTaskName %>"><%= task.taskName %></td>
                                     <td class="owner"><%= task.owner %></td>
                                     <td class="start"><%= task.start %></td>
                                     <td class="end"><%= task.end %></td>
