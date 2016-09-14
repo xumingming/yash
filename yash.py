@@ -17,6 +17,8 @@ YASH_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 YASH_DATA_HOME = os.path.expanduser("~/.yash")
 SUPPORTED_PLAIN_FILE_TYPES = ["markdown", "md", "txt", "plan", "py", "org"]
+COMPOSITE_PLAN_NAME = "__summary__.plan.md"
+COMPOSITE_PLAN_TITLE = "Plan Summary"
 
 session_opts = {
     'session.type': 'file',
@@ -190,10 +192,13 @@ def read_file_from_disk(fullpath):
     return text
 
 def extract_file_title(fullpath):
-    input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
-    name       = input_file.readline()
-    name       = name.strip("#")
-    input_file.close()
+    if not os.path.exists(fullpath) and os.path.basename(fullpath) == COMPOSITE_PLAN_NAME:
+        name = COMPOSITE_PLAN_TITLE
+    else:
+        input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
+        name       = input_file.readline()
+        name       = name.strip("#")
+        input_file.close()
 
     return name
 
@@ -223,8 +228,29 @@ def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
     man = request.GET.get('man')
 
-    text = read_file_from_disk(fullpath)
-    project = parser.parse(text)
+    if not os.path.exists(fullpath):
+        basename = os.path.basename(fullpath)
+        dirname = os.path.dirname(fullpath)
+        if basename == COMPOSITE_PLAN_NAME and os.path.exists(dirname + "/" + ".plan"):
+            plan_files = os.listdir(dirname)
+            plan_files = [x for x in plan_files if x.endswith(".plan.md")]
+            projects = []
+            for plan in plan_files:
+                fullpath = dirname + "/" + plan
+                text = read_file_from_disk(fullpath)
+                project = parser.parse(text)
+
+                projects.append(project)
+
+            project = combine_projects(projects)
+            raw_text = ""
+    else:
+        text = read_file_from_disk(fullpath)
+        project = parser.parse(text)
+        raw_text = read_file_from_disk(fullpath)
+        raw_text = render_markdown(raw_text)
+
+
     # make project info to json
     texts = []
     for idx, task in enumerate(project.tasks):
@@ -242,14 +268,12 @@ def serve_plan(filename):
 
     html = json.dumps(texts)
     fullurl = "/" + filename
-    breadcrumbs = calculate_breadcrumbs(fullurl)
     title = extract_file_title_by_fullurl(fullurl)
+    breadcrumbs = calculate_breadcrumbs(fullurl)
     man_stats = pretty_print_man_stats(project.tasks)
 
     # render the raw text
     fullpath   = os.getcwd() + "/" + filename
-    raw_text = read_file_from_disk(fullpath)
-    raw_text = render_markdown(raw_text)
 
     return dict(html = html,
                 title = title,
@@ -258,6 +282,29 @@ def serve_plan(filename):
                 selected_man = man,
                 raw_text = raw_text,
                 breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
+
+def combine_projects(projects):
+    if len(projects) == 1:
+        return projects[0]
+
+    ret = projects[0]
+    for project in projects[1:]:
+        ret = combine_project(ret, project)
+
+    return ret
+
+def combine_project(p1, p2):
+    project_start_date = min(p1.project_start_date, p2.project_start_date)
+    tasks = []
+    tasks.extend(p1.tasks)
+    tasks.extend(p2.tasks)
+
+    # FIXME
+    vacations = p1.vacations.copy()
+    vacations.update(p2.vacations)
+
+    ret = parser.Project(project_start_date, tasks, vacations)
+    return ret
 
 def pretty_print_man_stats(tasks):
     man2days = {}
@@ -323,10 +370,6 @@ class FileItem:
         self.path = path
         self.is_dir = is_dir
 
-    def __repr__(self):
-        return "{}[{}]".format(self.name.encode('UTF-8'), self.path)
-
-
 def calculate_breadcrumbs(path):
     path = path.strip("/")
     if len(path) == 0:
@@ -357,8 +400,11 @@ def directories(filename):
         abort(404, "Nothing to see here, Honey!")
 
     files = os.listdir(physical_path)
-    files = [x for x in files if not x.startswith(".")]
 
+    # check whether it contains a .plan file
+    contains_plan_flag = ".plan" in files
+
+    files = [x for x in files if not x.startswith(".")]
     role = session_get_role()
     if fullurl == "" and not role == "root":
         files = [x for x in files if config.has_right(role, fullurl + "/" + x)]
@@ -369,6 +415,10 @@ def directories(filename):
         name = extract_file_title_by_fullurl(newfullurl)
         is_dir = os.path.isdir(physical_path + "/" + f)
         filemap.append(FileItem(name, newfullurl, is_dir))
+
+    if contains_plan_flag:
+        summary_plan_name = COMPOSITE_PLAN_NAME
+        filemap.append(FileItem(summary_plan_name, fullurl + "/" + summary_plan_name, False))
 
     breadcrumbs = calculate_breadcrumbs(fullurl)
     title = extract_file_title_by_fullurl(fullurl)
