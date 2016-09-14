@@ -116,7 +116,8 @@ Gantt.prototype = {
             }
             owners[task.owner].push(task.end);
             return  {
-                left: (utils.datetime.getRangeDays(projectStartDate, task.start) + extra) * DATE_WIDTH,
+                // xumingmingv: 这里看起来是在凑数字?
+                left: (utils.datetime.getRangeDays(projectStartDate, task.start) + extra) * DATE_WIDTH - 1,
                 width: self._getCostWithWeekend(task.start, task.end, task.cost, extra) * DATE_WIDTH,
                 progress: task.progress,
                 isDelayed: task.isDelayed
