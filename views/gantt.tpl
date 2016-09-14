@@ -23,17 +23,16 @@
       <div id="tabs">
         <!-- Nav tabs -->
         <ul class="nav nav-tabs" role="tablist">
-          <li role="presentation" class="active"><a href="#text" aria-controls="text" role="tab" data-toggle="tab">Text</a></li>
-          <li role="presentation"><a href="#gantt" aria-controls="gantt" role="tab" data-toggle="tab">Gantt</a></li>
+          <li role="presentation" class="active"><a href="#gantt" aria-controls="gantt" role="tab" data-toggle="tab">Gantt</a></li>
           <li role="presentation"><a href="#summary" aria-controls="profile" role="tab" data-toggle="tab">统计信息</a></li>
+          %if not raw_text == "":
+          <li role="presentation"><a href="#text" aria-controls="text" role="tab" data-toggle="tab">Text</a></li>
+          %end
         </ul>
 
         <!-- Tab panes -->
         <div class="tab-content">
-          <div class="tab-pane active" id="text" role="tabpanel">
-            {{!raw_text}}
-          </div>
-          <div class="mygantt tab-pane" id="gantt" role="tabpanel">
+          <div class="mygantt tab-pane active" id="gantt" role="tabpanel">
           </div>
           <!-- Progress Container start -->
           <div role="tabpanel" class="tab-pane" id="summary">
@@ -96,6 +95,11 @@
             </table>
           </div>
           <!-- Progress Container end -->
+          %if not raw_text == "":
+          <div class="tab-pane" id="text" role="tabpanel">
+            {{!raw_text}}
+          </div>
+          %end
       </div>
 
   </div>

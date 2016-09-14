@@ -18,7 +18,7 @@ TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 YASH_DATA_HOME = os.path.expanduser("~/.yash")
 SUPPORTED_PLAIN_FILE_TYPES = ["markdown", "md", "txt", "plan", "py", "org"]
 COMPOSITE_PLAN_NAME = "__summary__.plan.md"
-COMPOSITE_PLAN_TITLE = "Plan Summary"
+COMPOSITE_PLAN_TITLE = u"_总计划_"
 
 session_opts = {
     'session.type': 'file',
@@ -244,12 +244,13 @@ def serve_plan(filename):
 
             project = combine_projects(projects)
             raw_text = ""
+            show_text = False
     else:
         text = read_file_from_disk(fullpath)
         project = parser.parse(text)
         raw_text = read_file_from_disk(fullpath)
         raw_text = render_markdown(raw_text)
-
+        show_text = True
 
     # make project info to json
     texts = []
@@ -417,8 +418,7 @@ def directories(filename):
         filemap.append(FileItem(name, newfullurl, is_dir))
 
     if contains_plan_flag:
-        summary_plan_name = COMPOSITE_PLAN_NAME
-        filemap.append(FileItem(summary_plan_name, fullurl + "/" + summary_plan_name, False))
+        filemap.append(FileItem(COMPOSITE_PLAN_TITLE, fullurl + "/" + COMPOSITE_PLAN_NAME, False))
 
     breadcrumbs = calculate_breadcrumbs(fullurl)
     title = extract_file_title_by_fullurl(fullurl)
