@@ -1,6 +1,6 @@
 # Yash
 
-使用Markdown文件来进行项目管理。
+使用Markdown文件来管理项目计划。
 
 ## 安装
 
