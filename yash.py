@@ -28,6 +28,54 @@ session_opts = {
 
 app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 
+# class TaskWrapper:
+#     def __init__(self, task, margin):
+#         self.task = task
+#         self.margin = margin
+
+class ProjectWrapper(parser.Project):
+    def __init__(self, delegate_projects):
+        self.delegate_projects = delegate_projects
+
+        project_start_dates = [project.project_start_date for project in delegate_projects]
+        print project_start_dates
+        min_project_start_date = min(project_start_dates)
+        _, min_project_start_date = parser.skip_weekend(min_project_start_date)
+        print "min_project_start_date: ", min_project_start_date
+
+        self.tasks = []
+        self.vacations = {}
+        for project in delegate_projects:
+            margin = (project.project_start_date - min_project_start_date).days
+            print "margin: ", margin
+            print "vacations:", project.vacations
+
+            for user, vacation_list in project.vacations.iteritems():
+                if not user in self.vacations:
+                    self.vacations[user] = []
+
+                self.vacations[user].extend(vacation_list)
+
+            for task in project.tasks:
+                task.start_point += margin
+                self.tasks.append(task)
+
+        self.project_start_date = min_project_start_date
+        print "self.project_strart_date:", self.project_start_date
+        self.tasks = sorted(self.tasks, key = lambda task : task.start_point)
+
+        # FIXME
+        print "all vacations:", self.vacations
+        #self.vacations = {}
+
+        # mans
+        mans = set([])
+        for project in delegate_projects:
+            mans = mans.union(project.mans)
+
+        self.mans = list(mans)
+
+
 class User:
     def __init__(self, username, role):
         self.username = username
@@ -242,7 +290,8 @@ def serve_plan(filename):
 
                 projects.append(project)
 
-            project = combine_projects(projects)
+            #project = combine_projects(projects)
+            project = ProjectWrapper(projects)
             raw_text = ""
             show_text = False
     else:
@@ -283,6 +332,9 @@ def serve_plan(filename):
                 selected_man = man,
                 raw_text = raw_text,
                 breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
+
+def combine_projects_1(projects):
+    pass
 
 def combine_projects(projects):
     if len(projects) == 1:
