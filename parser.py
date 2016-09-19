@@ -8,6 +8,7 @@ TASK_LINE_PATTERN = "\*(.+)\-\-\s*([0-9]+\.?[0-9]?)\s*(\[(.+?)\])?(\[([0-9]+)%\s
 HEADER_PATTERN = "^(#{2,})(.*)"
 VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2}))?\s*$"
 PROJECT_START_DATE_PATTERN = 'ProjectStartDate\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
+THE_ALL_MAN = "__ALL__"
 
 class Options:
     def __init__(self):
@@ -15,7 +16,7 @@ class Options:
         self.only_nonstarted = False
         self.english = False
         self.man = None
-        
+
 class Project:
     def __init__(self, project_start_date, tasks, vacations):
         self.project_start_date = project_start_date
@@ -27,7 +28,7 @@ class Project:
         self.total_man_days = 0
         self.cost_man_days = 0
         self.init_status()
-        
+
     def task_start_date(self, task):
         return add_days(task.man, self.project_start_date, self.vacations, task.start_point)
 
@@ -36,19 +37,33 @@ class Project:
 
     def is_delayed(self, task):
         return task.status < 100 and self.task_end_date(task) < datetime.datetime.now().date()
-    
+
     def init_status(self):
-        total_man_days = 0
-        cost_man_days = 0
+        # calculate all the mans
         for task in self.tasks:
-            total_man_days += task.man_day
-            cost_man_days += task.man_day * task.status / 100
             if not task.man in self.mans:
                 self.mans.append(task.man)
 
+        # handle the __ALL__ vacations
+        if THE_ALL_MAN in self.vacations:
+            for man in self.mans:
+                if not man in self.vacations:
+                    self.vacations[man] = []
+
+                self.vacations[man].extend(self.vacations[THE_ALL_MAN])
+            del self.vacations[THE_ALL_MAN]
+        print self.vacations
+
+
+        total_man_days = 0
+        cost_man_days = 0
+        # calculate the start_date, end_date of all tasks
+        for task in self.tasks:
+            total_man_days += task.man_day
+            cost_man_days += task.man_day * task.status / 100
             task.start_date = self.task_start_date(task)
             task.end_date = self.task_end_date(task)
-            
+
         project_status = 0
         if total_man_days > 0:
             project_status = cost_man_days / total_man_days
@@ -94,7 +109,7 @@ def skip_weekend_or_vacation(man, date1, vacations):
     while True:
         skipped, date1 = skip_weekend(date1)
         skipped, date1 = skip_vacation(man, date1, vacations)
-        
+
         if not skipped:
             break
 
@@ -111,7 +126,7 @@ def add_days(man, curr_day, vacations, days, is_start_date = True):
     ret = curr_day
     # current day may be a weekend day, so we skip the weekend first
     ret = skip_weekend_or_vacation(man, ret, vacations)
-    
+
     while idx > 0:
         ret = ret + datetime.timedelta(days=1)
 
@@ -140,19 +155,19 @@ def get_headers_as_str(headers):
 
 def parse_header_line(curr_headers, m):
     new_header_level = len(m.group(1).strip())
-    new_header = m.group(2).strip()    
+    new_header = m.group(2).strip()
     for i in range(len(curr_headers)):
         header_level, header = curr_headers[len(curr_headers) - 1 - i]
         if new_header_level <= header_level:
             curr_headers.pop()
-            
+
     curr_headers.append([new_header_level, new_header])
 
 def parse_task_line(tasks, curr_headers, m):
     task_name = m.group(1).strip()
     if len(curr_headers) > 0:
         task_name = get_headers_as_str(curr_headers) + "-" + task_name
-        
+
     man_day = m.group(2).strip()
     man_day = float(man_day)
     man = m.group(4)
@@ -164,7 +179,7 @@ def parse_task_line(tasks, curr_headers, m):
     status = 0
     if m.group(6):
         status = m.group(6).strip()
-         
+
     task = Task(task_name, man_day, man, status)
     tasks.append(task)
 
@@ -191,7 +206,7 @@ def parse(content):
     project_start_date = None
     curr_headers = []
     for line in lines:
-        
+
         # parse task line
         m = re.search(TASK_LINE_PATTERN, line)
         if m:
@@ -214,12 +229,11 @@ def parse(content):
         m = re.search(HEADER_PATTERN, line)
         if m:
             parse_header_line(curr_headers, m)
-                        
+
     if not project_start_date:
         raise "Please specify the project start date!"
         exit(1)
-        
+
     schedule(tasks)
 
     return Project(project_start_date, tasks, vacations)
-        
