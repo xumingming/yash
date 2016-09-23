@@ -40,7 +40,12 @@ class ProjectWrapper(parser.Project):
         self.tasks = []
         self.vacations = {}
         for project in delegate_projects:
-            margin = (project.project_start_date - min_project_start_date).days
+
+            # calculate margin
+            margin = parser.calculate_date_delta_skip_weekend(
+                min_project_start_date,
+                project.project_start_date
+            )
 
             for user, vacation_list in project.vacations.iteritems():
                 if not user in self.vacations:

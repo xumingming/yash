@@ -30,10 +30,10 @@ class Project:
         self.init_status()
 
     def task_start_date(self, task):
-        return add_days(task.man, self.project_start_date, self.vacations, task.start_point)
+        return add_days(self.project_start_date, task.start_point, task.man, self.vacations)
 
     def task_end_date(self, task):
-        return add_days(task.man, self.project_start_date, self.vacations, task.start_point + task.man_day, False)
+        return add_days(self.project_start_date, task.start_point + task.man_day, task.man, self.vacations, False)
 
     def is_delayed(self, task):
         return task.status < 100 and self.task_end_date(task) < datetime.datetime.now().date()
@@ -52,8 +52,6 @@ class Project:
 
                 self.vacations[man].extend(self.vacations[THE_ALL_MAN])
             del self.vacations[THE_ALL_MAN]
-        print self.vacations
-
 
         total_man_days = 0
         cost_man_days = 0
@@ -88,10 +86,13 @@ class Task:
         self.start_date = None
         self.end_date = None
 
-def skip_weekend(date1):
+def is_weekend(date1):
     weekday = date1.isoweekday()
-    if weekday > 5:
-        padding_days = (7 - weekday) + 1
+    return weekday > 5
+
+def skip_weekend(date1):
+    if is_weekend(date1):
+        padding_days = (7 - date1.isoweekday()) + 1
         date1 = date1 + datetime.timedelta(days=padding_days)
         return True, date1
     else:
@@ -105,17 +106,19 @@ def skip_vacation(man, date1, vacations):
     else:
         return False, date1
 
-def skip_weekend_or_vacation(man, date1, vacations):
+def skip_weekend_or_vacation(date1, man = None, vacations = {}):
     while True:
         skipped, date1 = skip_weekend(date1)
-        skipped, date1 = skip_vacation(man, date1, vacations)
+
+        if not man == None:
+            skipped, date1 = skip_vacation(man, date1, vacations)
 
         if not skipped:
             break
 
     return date1
 
-def add_days(man, curr_day, vacations, days, is_start_date = True):
+def add_days(curr_day, days, man = None, vacations = {}, is_start_date = True):
     idx = int(ceil(days))
     if idx > days:
         idx -= 1
@@ -125,17 +128,35 @@ def add_days(man, curr_day, vacations, days, is_start_date = True):
 
     ret = curr_day
     # current day may be a weekend day, so we skip the weekend first
-    ret = skip_weekend_or_vacation(man, ret, vacations)
+    ret = skip_weekend_or_vacation(ret, man, vacations)
 
     while idx > 0:
         ret = ret + datetime.timedelta(days=1)
-
         # skip the weekend and vacations
-        ret = skip_weekend_or_vacation(man, ret, vacations)
-
+        ret = skip_weekend_or_vacation(ret, man, vacations)
         idx -= 1
 
     return ret
+
+def calculate_date_delta_skip_weekend(date1, date2):
+    """
+    计算两个日期之间相差的天数，但是会跳过周末。
+    """
+
+    ret = date2
+    cnt = 0
+
+    # 如果项目开始日期是周末(其实不应该这样，为什么项目是周末开始)，
+    # 那么自动往后推一天, 推到下周一再开始这个项目
+    if is_weekend(ret):
+        cnt += 1
+
+    while ret > date1:
+        if not is_weekend(ret):
+            cnt += 1
+        ret = ret - datetime.timedelta(days = 1)
+
+    return cnt
 
 def schedule(tasks):
     curr_days = {}
