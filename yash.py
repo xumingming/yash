@@ -15,18 +15,9 @@ import json
 
 YASH_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
-YASH_DATA_HOME = os.path.expanduser("~/.yash")
 SUPPORTED_PLAIN_FILE_TYPES = ["markdown", "md", "txt", "plan", "py", "org"]
 COMPOSITE_PLAN_NAME = "__summary__.plan.md"
 COMPOSITE_PLAN_TITLE = u"_总计划_"
-
-session_opts = {
-    'session.type': 'file',
-    'session.data_dir': YASH_DATA_HOME + '/session/',
-    'session.auto': True,
-}
-
-app = beaker.middleware.SessionMiddleware(bottle.app(), session_opts)
 
 class ProjectWrapper(parser.Project):
     def __init__(self, delegate_projects):
@@ -67,114 +58,11 @@ class ProjectWrapper(parser.Project):
 
         self.mans = list(mans)
 
-class User:
-    def __init__(self, username, role):
-        self.username = username
-        self.role = role
-
-class Config:
-    def __init__(self):
-        config = simpleyaml.safe_load(open(YASH_DATA_HOME + "/config.yaml"))
-        self.roles = config["roles"]
-        self.users = config["users"]
-
-    def authenticate(self, username, password):
-        return username in self.users and self.users[username]['password'] == password
-
-    def get_role_by_username(self, username):
-        user = self.users[username]
-        if not user:
-            return "public"
-        else:
-            return user["role"]
-
-    def has_right(self, role, path):
-        """Whether the specified `role` has the right to
-           access the specified path?
-        """
-
-        for p in self.roles[role]:
-            if re.compile(p).match(path):
-                return True
-
-        return False
-
-    def is_login_required(self, url):
-        staticFilePattren = '^/static/'
-        return (not url in ["/login", "/not-authorized", "/logout", "/"]) and not re.search(staticFilePattren, url)
-
-config = Config()
-
-def session_get(key):
-    session = bottle.request.environ.get('beaker.session')
-    return session.get(key)
-
-def session_set(key, value):
-    session = bottle.request.environ.get('beaker.session')
-
-    session[key] = value
-    session.save()
-
-def session_get_role():
-    user = session_get("user")
-    if not user:
-        return "public"
-    return user.role
-
 def post_get(name, default=''):
     return bottle.request.POST.get(name, default).strip()
 
-def is_logined():
-    return not session_get("user") is None
-
-@hook('before_request')
-def auth_hook():
-    # role based authentication
-    if not config.is_login_required(request.path):
-        return
-
-    role = session_get_role()
-    # super user can access anything
-    if role == "root":
-        return
-
-    if config.has_right(role, request.path):
-        if role == "public" or is_logined():
-            return
-        else:
-            redirect("/login")
-
-    redirect("/not-authorized")
-
-@get("/not-authorized")
-def not_authorized():
-    return "Access Denied!"
-
 def common_view_args():
     return dict(request = request, is_logined = is_logined())
-
-@get("/login")
-@view("login")
-def login():
-    return dict()
-
-@post("/login")
-def login_post():
-    username = request.forms.get("username")
-    password = request.forms.get("password")
-
-    if config.authenticate(username, password):
-        role = config.get_role_by_username(username)
-        user = User(username, role)
-        session_set("user", user)
-        redirect("/")
-    else:
-        redirect("/login")
-
-@get("/logout")
-def logout():
-    session_set("user", None)
-    redirect("/")
 
 @get('/<filename:re:static\/.*\.(css|js|png|jpg|gif|ico|woff|woff2|ttf|map)>')
 def static_files(filename):
@@ -202,7 +90,7 @@ def search_files():
 
         newresult.append(x)
 
-    return dict(results = newresult, keyword = keyword, request = request, is_logined = is_logined())
+    return dict(results = newresult, keyword = keyword, request = request)
 
 def render_markdown(text):
     return markdown.markdown(
@@ -218,7 +106,6 @@ def markdown_files_1(text, fullurl):
     return dict(html = html,
                 request = request,
                 title = title,
-                is_logined = is_logined(),
                 breadcrumbs = breadcrumbs)
 
 def read_file_from_disk(fullpath):
@@ -321,7 +208,7 @@ def serve_plan(filename):
                 man_stats = man_stats,
                 selected_man = man,
                 raw_text = raw_text,
-                breadcrumbs = breadcrumbs, request = request, is_logined = is_logined())
+                breadcrumbs = breadcrumbs, request = request)
 
 def pretty_print_man_stats(tasks):
     man2days = {}
@@ -361,8 +248,7 @@ def sql_files(filename):
                 code = text,
                 request = request,
                 title = title,
-                breadcrumbs = breadcrumbs,
-                is_logined = is_logined()
+                breadcrumbs = breadcrumbs
     )
 
 @route('/<filename:re:.*\.(txt|properties|py|org)>')
@@ -422,9 +308,6 @@ def directories(filename):
     contains_plan_flag = ".plan" in files
 
     files = [x for x in files if not x.startswith(".")]
-    role = session_get_role()
-    if fullurl == "" and not role == "root":
-        files = [x for x in files if config.has_right(role, fullurl + "/" + x)]
 
     filemap = []
     for f in files:
@@ -442,8 +325,8 @@ def directories(filename):
                 fullurl = fullurl,
                 title = title,
                 breadcrumbs = breadcrumbs,
-                request = request,
-                is_logined = is_logined())
+                request = request
+                )
 
 if __name__ == '__main__':
     opts, args = getopt.getopt(sys.argv[1:], 'p:h')
@@ -458,4 +341,4 @@ if __name__ == '__main__':
 
     YASH_HOME = sys.path[0]
     bottle.TEMPLATE_PATH = [os.path.join(YASH_HOME, "views")]
-    bottle.run(app = app, host='0.0.0.0', port=port)
+    bottle.run(host='0.0.0.0', port=port)

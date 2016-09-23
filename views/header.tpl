@@ -12,26 +12,20 @@
           %else:
 		  <li class="active">{{breadcrumb.name}}</li>
 		  %end
-		  %end  
+		  %end
 	    </ol>
         %end
-        
+
         <ul class="nav navbar-nav" style="float:right">
-          % if not is_logined:
-          <li><a href="/login">Login</a></li>
-          % else:
-          <li><a href="/logout">Logout</a></li>
-          % end
           <form class="navbar-form navbar-left" role="search" action="/search" method="GET">
             <div class="form-group">
               <input type="text" class="form-control" placeholder="Search" name="w">
             </div>
             <button type="submit" class="btn btn-default">Search</button>
-          </form>		  
+          </form>
         </ul>
       </div><!-- /.navbar-collapse -->
     </div><!-- /.container-fluid -->
   </nav>
 </div>
 % end
-
