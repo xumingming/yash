@@ -114,7 +114,7 @@ def read_file_from_disk(fullpath):
 
     input_file = codecs.open(fullpath, mode="r", encoding="utf-8")
     text       = input_file.read()
-
+    input_file.close()
     return text
 
 def extract_file_title(fullpath):
@@ -319,6 +319,15 @@ def directories(filename):
     if contains_plan_flag:
         filemap.append(FileItem(COMPOSITE_PLAN_TITLE, fullurl + "/" + COMPOSITE_PLAN_NAME, False))
 
+    def file_item_cmp(x, y):
+        if (x.name < y.name):
+            return -1
+        elif (x.name == y.name):
+            return 0
+        else:
+            return 1
+
+    filemap = sorted(filemap, cmp = file_item_cmp)
     breadcrumbs = calculate_breadcrumbs(fullurl)
     title = extract_file_title_by_fullurl(fullurl)
     return dict(files = filemap,
