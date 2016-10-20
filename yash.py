@@ -13,6 +13,10 @@ import parser
 import getopt
 import json
 
+reload(sys)
+sys.setdefaultencoding('utf8')
+
+
 YASH_HOME = None
 TEMPLATE_PATH = [os.path.join(os.getcwd(), "views")]
 SUPPORTED_PLAIN_FILE_TYPES = ["markdown", "md", "txt", "plan", "py", "org"]
@@ -320,9 +324,11 @@ def directories(filename):
         filemap.append(FileItem(COMPOSITE_PLAN_TITLE, fullurl + "/" + COMPOSITE_PLAN_NAME, False))
 
     def file_item_cmp(x, y):
-        if (x.name < y.name):
+        xname = x.name
+        yname = y.name
+        if (xname < yname):
             return -1
-        elif (x.name == y.name):
+        elif (xname == yname):
             return 0
         else:
             return 1
