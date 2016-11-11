@@ -169,7 +169,11 @@ def serve_plan(filename):
             for plan in plan_files:
                 fullpath = dirname + "/" + plan
                 text = read_file_from_disk(fullpath)
-                project = parser.parse(text)
+                try:
+                    project = parser.parse(text)
+                except parser.ParserException, e:
+                    print e
+                    error = e.message + "(file: " + fullpath + ")"
 
                 projects.append(project)
 
@@ -180,31 +184,33 @@ def serve_plan(filename):
         text = read_file_from_disk(fullpath)
         try:
             project = parser.parse(text)
-            raw_text = read_file_from_disk(fullpath)
-            raw_text = render_markdown(raw_text)
-
-            # make project info to json
-            texts = []
-            for idx, task in enumerate(project.tasks):
-                # if not man or man == task.man.encode("utf-8"):
-                taskjson = {}
-                taskjson["taskName"] = render_markdown(task.name.encode("utf-8"))
-                taskjson["cleanedTaskName"] = task.name.encode("utf-8")
-                taskjson["owner"] = task.man.encode("utf-8")
-                taskjson["cost"] = task.man_day
-                taskjson["start"] = str(project.task_start_date(task))
-                taskjson["end"] = str(project.task_end_date(task))
-                taskjson["isDelayed"] = str(project.is_delayed(task))
-                taskjson["progress"] = str(task.status)
-                texts.append(taskjson)
         except parser.ParserException, e:
             print e
-            project = parser.EmptyProject
-            texts = []
-            raw_text = e.message
-            error = e.message
+            error = e.message + "(file: " + fullpath + ")"
+
+        raw_text = read_file_from_disk(fullpath)
+        raw_text = render_markdown(raw_text)
 
         show_text = True
+
+    if error != None:
+        project = parser.EmptyProject
+        raw_text = error
+
+    # make project info to json
+    texts = []
+    for idx, task in enumerate(project.tasks):
+        # if not man or man == task.man.encode("utf-8"):
+        taskjson = {}
+        taskjson["taskName"] = render_markdown(task.name.encode("utf-8"))
+        taskjson["cleanedTaskName"] = task.name.encode("utf-8")
+        taskjson["owner"] = task.man.encode("utf-8")
+        taskjson["cost"] = task.man_day
+        taskjson["start"] = str(project.task_start_date(task))
+        taskjson["end"] = str(project.task_end_date(task))
+        taskjson["isDelayed"] = str(project.is_delayed(task))
+        taskjson["progress"] = str(task.status)
+        texts.append(taskjson)
 
     html = json.dumps(texts)
     fullurl = "/" + filename
