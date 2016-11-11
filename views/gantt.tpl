@@ -6,6 +6,13 @@
   <body>
   % include('header')
   <div class="container">
+      %if error != None:
+      <div class="error">
+          {{error}}
+      </div>
+      %end
+
+      %if error == None:
       <div class="filter-container">
         责任人:
         <select id="filterByMan">
@@ -101,6 +108,7 @@
           </div>
           %end
       </div>
+      %end
 
   </div>
     <script>

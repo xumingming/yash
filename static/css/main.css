@@ -7,3 +7,8 @@
     color: #999;
     padding-right: 5px;
 }
+
+.error {
+    color: #F00;
+    font-size: 20px;
+}

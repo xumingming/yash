@@ -158,6 +158,7 @@ def serve_plan(filename):
     fullpath   = os.getcwd() + "/" + filename
     man = request.GET.get('man')
 
+    error = None
     if not os.path.exists(fullpath):
         basename = os.path.basename(fullpath)
         dirname = os.path.dirname(fullpath)
@@ -177,31 +178,39 @@ def serve_plan(filename):
             show_text = False
     else:
         text = read_file_from_disk(fullpath)
-        project = parser.parse(text)
-        raw_text = read_file_from_disk(fullpath)
-        raw_text = render_markdown(raw_text)
-        show_text = True
+        try:
+            project = parser.parse(text)
+            raw_text = read_file_from_disk(fullpath)
+            raw_text = render_markdown(raw_text)
 
-    # make project info to json
-    texts = []
-    for idx, task in enumerate(project.tasks):
-        # if not man or man == task.man.encode("utf-8"):
-        taskjson = {}
-        taskjson["taskName"] = render_markdown(task.name.encode("utf-8"))
-        taskjson["cleanedTaskName"] = task.name.encode("utf-8")
-        taskjson["owner"] = task.man.encode("utf-8")
-        taskjson["cost"] = task.man_day
-        taskjson["start"] = str(project.task_start_date(task))
-        taskjson["end"] = str(project.task_end_date(task))
-        taskjson["isDelayed"] = str(project.is_delayed(task))
-        taskjson["progress"] = str(task.status)
-        texts.append(taskjson)
+            # make project info to json
+            texts = []
+            for idx, task in enumerate(project.tasks):
+                # if not man or man == task.man.encode("utf-8"):
+                taskjson = {}
+                taskjson["taskName"] = render_markdown(task.name.encode("utf-8"))
+                taskjson["cleanedTaskName"] = task.name.encode("utf-8")
+                taskjson["owner"] = task.man.encode("utf-8")
+                taskjson["cost"] = task.man_day
+                taskjson["start"] = str(project.task_start_date(task))
+                taskjson["end"] = str(project.task_end_date(task))
+                taskjson["isDelayed"] = str(project.is_delayed(task))
+                taskjson["progress"] = str(task.status)
+                texts.append(taskjson)
+        except parser.ParserException, e:
+            print e
+            project = parser.EmptyProject
+            texts = []
+            raw_text = e.message
+            error = e.message
+
+        show_text = True
 
     html = json.dumps(texts)
     fullurl = "/" + filename
     title = extract_file_title_by_fullurl(fullurl)
-    breadcrumbs = calculate_breadcrumbs(fullurl)
     man_stats = pretty_print_man_stats(project.tasks)
+    breadcrumbs = calculate_breadcrumbs(fullurl)
 
     # render the raw text
     fullpath   = os.getcwd() + "/" + filename
@@ -212,7 +221,9 @@ def serve_plan(filename):
                 man_stats = man_stats,
                 selected_man = man,
                 raw_text = raw_text,
-                breadcrumbs = breadcrumbs, request = request)
+                breadcrumbs = breadcrumbs, request = request,
+                error = error
+    )
 
 def pretty_print_man_stats(tasks):
     man2days = {}

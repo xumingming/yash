@@ -10,6 +10,9 @@ VACATION_PATTERN = "\*(.+)\-\-\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})(\s*\-\s*([0-9]{4
 PROJECT_START_DATE_PATTERN = 'ProjectStartDate\:\s*([0-9]{4}\-[0-9]{2}\-[0-9]{2})'
 THE_ALL_MAN = "__ALL__"
 
+class ParserException(Exception):
+    pass
+
 class Options:
     def __init__(self):
         self.print_man_stats = False
@@ -69,6 +72,8 @@ class Project:
         self.total_man_days = total_man_days
         self.cost_man_days = cost_man_days
         self.status = project_status
+
+EmptyProject = Project(datetime.datetime.now().date(), [], {})
 
 class Task:
     def __init__(self, name, man_day, man, status=0):
@@ -252,8 +257,7 @@ def parse(content):
             parse_header_line(curr_headers, m)
 
     if not project_start_date:
-        raise "Please specify the project start date!"
-        exit(1)
+        raise ParserException("Please specify the project start date!")
 
     schedule(tasks)
 
