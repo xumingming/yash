@@ -121,10 +121,10 @@
                     <table>
                         <thead>
                             <tr>
-                                <th class="name">任务名称</th>
+                                <th class="name">任务</th>
                                 <th class="owner">责任人</th>
-                                <th class="start">开始时间</th>
-                                <th class="end">结束时间</th>
+                                <th class="start">开始</th>
+                                <th class="end">结束</th>
                             </tr>
                         </thead>
                         <tbody>

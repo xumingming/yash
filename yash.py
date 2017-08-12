@@ -152,6 +152,9 @@ def extract_file_title_by_fullurl(fullurl):
     else:
         return os.path.basename(fullurl)
 
+def format_date(d):
+    return d.strftime("%m-%d")
+
 @get('/<filename:re:.*\.plan\.(md|markdown)>')
 @view('gantt')
 def serve_plan(filename):
@@ -206,8 +209,8 @@ def serve_plan(filename):
         taskjson["cleanedTaskName"] = task.name.encode("utf-8")
         taskjson["owner"] = task.man.encode("utf-8")
         taskjson["cost"] = task.man_day
-        taskjson["start"] = str(project.task_start_date(task))
-        taskjson["end"] = str(project.task_end_date(task))
+        taskjson["start"] = format_date(project.task_start_date(task))
+        taskjson["end"] = format_date(project.task_end_date(task))
         taskjson["isDelayed"] = str(project.is_delayed(task))
         taskjson["progress"] = str(task.status)
         texts.append(taskjson)
@@ -324,6 +327,12 @@ def directories(filename):
         abort(404, "Nothing to see here, Honey!")
 
     files = os.listdir(physical_path)
+
+    # reverse sort it!
+    def reverse_cmp(a, b):
+        return cmp(b, a)
+
+    files = sorted(files, reverse_cmp)
 
     # check whether it contains a .plan file
     contains_plan_flag = ".plan" in files

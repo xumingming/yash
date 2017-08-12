@@ -44,7 +44,7 @@
 }
 .gantt-container .detail-table {
   float: left;
-  max-width: 60%;
+  max-width: 30%;
   border: 1px solid #ccc;
   overflow: auto;
 }
@@ -63,7 +63,7 @@
 }
 .gantt-container .gantt-area {
   float: left;
-  max-width: 40%;
+  max-width: 70%;
   border: 1px solid #ccc;
   overflow: auto;
   border-left: 0;
@@ -112,7 +112,7 @@
 }
 .progress-container .progress {
   margin: 0;
-  width: 300px;
+  width: 500px;
 }
 .gantt-container p {
   margin: 0;
