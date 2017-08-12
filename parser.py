@@ -192,7 +192,7 @@ def parse_header_line(curr_headers, m):
 def parse_task_line(tasks, curr_headers, m):
     task_name = m.group(1).strip()
     if len(curr_headers) > 0:
-        task_name = get_headers_as_str(curr_headers) + "-" + task_name
+        task_name = get_headers_as_str(curr_headers) + " :: " + task_name
 
     man_day = m.group(2).strip()
     man_day = float(man_day)
