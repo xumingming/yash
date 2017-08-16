@@ -177,7 +177,7 @@ def parse_date(input):
     return datetime.datetime.strptime(input, '%Y-%m-%d').date()
 
 def get_headers_as_str(headers):
-    return "-".join([header for [_, header] in headers])
+    return " :: ".join([header for [_, header] in headers])
 
 def parse_header_line(curr_headers, m):
     new_header_level = len(m.group(1).strip())
