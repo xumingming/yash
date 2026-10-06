@@ -2,9 +2,9 @@
   <head>
     % include('head')    
     <!-- Create a simple CodeMirror instance -->
-    <link rel="stylesheet" href="/static/lib/codemirror/5.5.0/codemirror.css">
-    <script src="/static/lib/codemirror/5.5.0/codemirror.js"></script>
-    <script src="/static/lib/codemirror/5.5.0/mode/sql.js"></script>
+    <link rel="stylesheet" href="/static/lib/codemirror/5.65.21/codemirror.css">
+    <script src="/static/lib/codemirror/5.65.21/codemirror.js"></script>
+    <script src="/static/lib/codemirror/5.65.21/mode/sql.js"></script>
   </head>
   <body>
     % include('header')        

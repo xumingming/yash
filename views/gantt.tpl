@@ -176,7 +176,7 @@
     <script type="text/template" id="__TEMPLATE__progress">
     </script>
     % include('footer')
-    <script src="/static/lib/underscore/1.8.3/underscore-min.js"></script>
+    <script src="/static/lib/underscore/1.13.7/underscore-min.js"></script>
     <script src="/static/dist/scripts/gantt.js"></script>
   </body>
 </html>

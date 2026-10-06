@@ -98,9 +98,11 @@ module.exports = function (grunt) {
         options: {
           middleware: function(connect) {
             return [
-              connect.static('.tmp'),
-              connect().use('/bower_components', connect.static('./bower_components')),
-              connect.static(config.app)
+              // grunt-contrib-connect >= 1.x: connect.static was removed,
+              // use the standalone serve-static middleware instead
+              require('serve-static')('.tmp'),
+              connect().use('/bower_components', require('serve-static')('./bower_components')),
+              require('serve-static')(config.app)
             ];
           }
         }
@@ -109,12 +111,13 @@ module.exports = function (grunt) {
         options: {
           open: false,
           port: 9001,
+          hostname: 'localhost',
           middleware: function(connect) {
             return [
-              connect.static('.tmp'),
-              connect.static('test'),
-              connect().use('/bower_components', connect.static('./bower_components')),
-              connect.static(config.app)
+              require('serve-static')('.tmp'),
+              require('serve-static')('test'),
+              connect().use('/bower_components', require('serve-static')('./bower_components')),
+              require('serve-static')(config.app)
             ];
           }
         }
@@ -220,14 +223,21 @@ module.exports = function (grunt) {
     },
 
     // Automatically inject Bower components into the HTML file
+    // NOTE: wiredep is a no-op nowadays: the project stopped using Bower and
+    // vendored libraries now live in static/lib, but the task stays in the
+    // build chain so the registered task list is unchanged.
     wiredep: {
       app: {
-        ignorePath: /^\/|\.\.\//,
-        src: ['<%= config.app %>/index.html']
+        src: [],
+        directory: 'bower_components',
+        dependencies: false,
+        'dev-dependencies': false
       },
       less: {
-        src: ['<%= config.app %>/styles/{,*/}*.less'],
-        ignorePath: /(\.\.\/){1,2}bower_components\//
+        src: [],
+        directory: 'bower_components',
+        dependencies: false,
+        'dev-dependencies': false
       }
     },
 
