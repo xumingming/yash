@@ -27,7 +27,8 @@
   /* right gantt */
 }
 .gantt-container * {
-  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
 }
 .gantt-container table {
   font-size: 12px;

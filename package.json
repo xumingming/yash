@@ -1,33 +1,27 @@
 {
   "name": "yash",
-  "devDependencies": {
-    "grunt": "^1.5.3",
-    "grunt-autoprefixer": "^3.0.4",
-    "grunt-browserify": "^6.0.0",
-    "grunt-concurrent": "^3.0.0",
-    "grunt-contrib-clean": "^2.0.1",
-    "grunt-contrib-concat": "^2.1.0",
-    "grunt-contrib-connect": "^5.0.1",
-    "grunt-contrib-copy": "^1.0.0",
-    "grunt-contrib-cssmin": "^5.0.0",
-    "grunt-contrib-handlebars": "^3.0.0",
-    "grunt-contrib-htmlmin": "^3.1.0",
-    "grunt-contrib-imagemin": "^4.0.0",
-    "grunt-contrib-jshint": "^3.2.0",
-    "grunt-contrib-less": "^3.0.0",
-    "grunt-contrib-uglify": "^5.2.2",
-    "grunt-contrib-watch": "^1.1.0",
-    "grunt-filerev": "^2.3.1",
-    "grunt-mocha": "^1.2.0",
-    "grunt-newer": "^1.3.0",
-    "grunt-svgmin": "^7.0.0",
-    "grunt-usemin": "^3.1.1",
-    "grunt-wiredep": "^3.0.1",
-    "jshint-stylish": "^0.4.0",
-    "load-grunt-tasks": "^0.4.0",
-    "time-grunt": "^0.4.0"
+  "private": true,
+  "description": "Yet Another SHell - front-end build tooling (runtime is the Python/bottle backend)",
+  "scripts": {
+    "build": "node build.js",
+    "build:js": "node build.js js",
+    "build:css": "node build.js css",
+    "watch": "node watch.js",
+    "test": "npm run test:setup && node test/server.js",
+    "test:setup": "node test/setup-vendor.js"
   },
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.6.1",
+    "chai": "^4.5.0",
+    "connect": "^3.7.0",
+    "esbuild": "^0.28.2",
+    "less": "^4.9.1",
+    "mocha": "^12.0.3",
+    "postcss": "^8.5.29",
+    "postcss-cli": "^12.0.0",
+    "serve-static": "^2.2.1"
   }
 }

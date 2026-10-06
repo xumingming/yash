@@ -1,10 +1,11 @@
 (function () {
   'use strict';
 
-  describe('Give it some context', function () {
-    describe('maybe a bit more context here', function () {
-      it('should run here few assertions', function () {
-
+  describe('appModules', function () {
+    describe('utils', function () {
+      it('should be exposed by the test bundle', function () {
+        expect(window.appModules).to.be.an('object');
+        expect(window.appModules.utils).to.be.an('object');
       });
     });
   });
